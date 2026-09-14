@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { envOrNull } from "@/lib/site";
 
 /**
  * Client Supabase à privilèges service_role.
@@ -11,8 +12,8 @@ let cached: SupabaseClient | null = null;
 export function getSupabaseAdmin(): SupabaseClient {
   if (cached) return cached;
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = envOrNull("NEXT_PUBLIC_SUPABASE_URL");
+  const serviceKey = envOrNull("SUPABASE_SERVICE_ROLE_KEY");
 
   if (!url || !serviceKey) {
     throw new Error(
@@ -29,7 +30,7 @@ export function getSupabaseAdmin(): SupabaseClient {
 /** Vrai si les variables d'environnement Supabase sont présentes. */
 export function isSupabaseConfigured(): boolean {
   return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
+    envOrNull("NEXT_PUBLIC_SUPABASE_URL") &&
+      envOrNull("SUPABASE_SERVICE_ROLE_KEY"),
   );
 }

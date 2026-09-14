@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,10 +9,10 @@ const inter = Inter({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://travis.app";
+const SITE_URL = siteUrl();
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Travis — Trouvez votre bourse, bâtissez votre avenir",
     template: "%s · Travis",
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    url: siteUrl,
+    url: SITE_URL,
     siteName: "Travis",
     title: "Travis — Trouvez votre bourse, bâtissez votre avenir",
     description:

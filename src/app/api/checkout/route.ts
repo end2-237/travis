@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getPaymentProvider, REPORT_PRICE_XAF } from "@/lib/payments";
+import { envOrNull } from "@/lib/site";
 import { checkoutSchema } from "@/lib/validation";
 import { loadEvaluation } from "@/server/profiles";
 import { attachTransactionRef, createOrder, fulfillOrder } from "@/server/orders";
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
 }
 
 function resolveOrigin(request: NextRequest): string {
-  const configured = process.env.NEXT_PUBLIC_SITE_URL;
+  const configured = envOrNull("NEXT_PUBLIC_SITE_URL");
   if (configured) return configured.replace(/\/$/, "");
 
   const host = request.headers.get("x-forwarded-host") ?? request.nextUrl.host;

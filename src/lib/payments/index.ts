@@ -1,6 +1,7 @@
 import "server-only";
 import { MonetbilProvider } from "@/lib/payments/monetbil";
 import { PayUnitProvider } from "@/lib/payments/payunit";
+import { envOrNull } from "@/lib/site";
 import type {
   CreatePaymentInput,
   CreatePaymentResult,
@@ -35,7 +36,7 @@ class DemoProvider implements PaymentProvider {
 }
 
 export function getPaymentProvider(): PaymentProvider {
-  const configured = (process.env.PAYMENT_PROVIDER ?? "").toLowerCase();
+  const configured = (envOrNull("PAYMENT_PROVIDER") ?? "").toLowerCase();
 
   if (configured === "monetbil") {
     const key = required("MONETBIL_SERVICE_KEY");
@@ -61,7 +62,7 @@ export function isLivePaymentConfigured(): boolean {
 }
 
 function required(name: string): string {
-  const value = process.env[name];
+  const value = envOrNull(name);
   if (!value) {
     throw new Error(
       `Variable d'environnement manquante pour l'agrégateur de paiement : ${name}`,

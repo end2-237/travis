@@ -1,4 +1,5 @@
 import "server-only";
+import { envOrNull } from "@/lib/site";
 
 /**
  * Livraison WhatsApp du lien de téléchargement (SRS §4, jour 7 — optionnel).
@@ -10,9 +11,9 @@ export async function notifyReportReady(
   fullName: string | null,
   orderId: string,
 ): Promise<boolean> {
-  const token = process.env.WHATSAPP_TOKEN;
-  const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const token = envOrNull("WHATSAPP_TOKEN");
+  const phoneId = envOrNull("WHATSAPP_PHONE_NUMBER_ID");
+  const siteUrl = envOrNull("NEXT_PUBLIC_SITE_URL");
 
   if (!token || !phoneId || !siteUrl) return false;
 
