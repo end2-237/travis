@@ -23,6 +23,7 @@ import {
 } from "@/components/destination/detail-blocks";
 import { DocumentChecklist } from "@/components/destination/document-checklist";
 import { PageViewTracker } from "@/components/analytics/page-view";
+import { FloatingActions } from "@/components/site/floating-actions";
 import { Reveal } from "@/components/motion/reveal";
 import { Parallax } from "@/components/motion/parallax";
 import { Footer } from "@/components/site/footer";
@@ -517,6 +518,12 @@ export default async function DestinationPage({
       </div>
 
       <Footer />
+
+      {/*
+        La barre d'ancres collante couvre déjà la navigation entre sections :
+        seul le retour en haut manque sur une page de cette longueur.
+      */}
+      <FloatingActions actions={[]} />
     </main>
   );
 }

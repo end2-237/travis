@@ -6,6 +6,7 @@ import { CountUp } from "@/components/motion/count-up";
 import { MatchList } from "@/components/results/match-list";
 import { ProgramVerdictCard } from "@/components/results/program-verdict";
 import { DossierSection } from "@/components/results/dossier-section";
+import { ResultsFloatingActions } from "@/components/results/floating-actions";
 import { Footer } from "@/components/site/footer";
 import { PageHeader } from "@/components/site/page-header";
 import { UnlockPanel } from "@/components/checkout/unlock-panel";
@@ -148,7 +149,7 @@ export default async function ResultsPage({
         {/* Constituer le dossier — après le choix, avant le rapport */}
         {matches.length > 0 ? (
           <Reveal>
-            <div className="mt-16">
+            <div id="dossier" className="mt-16 scroll-mt-20">
               <span className="eyebrow">Constituer votre dossier</span>
               <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <h2 className="section-title max-w-[20ch]">
@@ -167,7 +168,10 @@ export default async function ResultsPage({
 
         {/* Le rapport, en complément — après les offres, jamais avant */}
         <Reveal>
-          <div className="mt-16 grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
+          <div
+            id="rapport"
+            className="mt-16 grid scroll-mt-20 gap-6 lg:grid-cols-[minmax(0,1fr)_400px]"
+          >
             <div>
               <span className="eyebrow">Pour aller plus loin</span>
               <h2 className="section-title mt-4 max-w-[18ch]">
@@ -209,6 +213,8 @@ export default async function ResultsPage({
       </section>
 
       <Footer />
+
+      <ResultsFloatingActions hasDossier={matches.length > 0} />
     </main>
   );
 }
