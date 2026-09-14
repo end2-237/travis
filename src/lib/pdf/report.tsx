@@ -1,5 +1,6 @@
 import {
   Document,
+  Image,
   Page,
   StyleSheet,
   Text,
@@ -8,6 +9,8 @@ import {
 } from "@react-pdf/renderer";
 import { buildTimeline } from "@/lib/pdf/checklist";
 import { catalogEntry } from "@/data/catalog";
+import { countryImage } from "@/data/images";
+import { inCountry } from "@/lib/grammar";
 import {
   SERVICE_LABELS,
   servicesOfKind,
@@ -92,6 +95,19 @@ const s = StyleSheet.create({
   },
   matchTitle: { fontSize: 11, fontFamily: "Helvetica-Bold", letterSpacing: -0.2 },
   matchMeta: { fontSize: 8, color: MUTED, marginTop: 2 },
+  cover: {
+    width: "100%",
+    height: 168,
+    borderRadius: 8,
+    objectFit: "cover",
+    marginTop: 14,
+  },
+  coverCaption: {
+    fontSize: 8,
+    color: MUTED,
+    marginTop: 5,
+    textAlign: "center",
+  },
   serviceCard: {
     borderWidth: 1,
     borderColor: LINE,
@@ -214,6 +230,40 @@ function Shell({
       </View>
     </Page>
   );
+}
+
+/**
+ * Destination illustrée en tête du rapport.
+ *
+ * Une seule destination demandée : c'est celle-là, sans ambiguïté. Plusieurs :
+ * celle où le candidat a le plus d'options, car c'est la piste la plus
+ * sérieuse. Aucune : le pays de la meilleure correspondance.
+ */
+function pickCoverCountry(
+  profile: StudentProfile,
+  matches: MatchSnapshot["matches"],
+): string | null {
+  const targets = profile.target_countries ?? [];
+
+  if (targets.length === 1) return targets[0];
+
+  if (targets.length > 1) {
+    const counts = new Map<string, number>();
+    for (const match of matches) {
+      if (targets.includes(match.country)) {
+        counts.set(match.country, (counts.get(match.country) ?? 0) + 1);
+      }
+    }
+    if (counts.size > 0) {
+      // À égalité, l'ordre de saisie du candidat tranche.
+      return [...counts.entries()].sort(
+        (a, b) => b[1] - a[1] || targets.indexOf(a[0]) - targets.indexOf(b[0]),
+      )[0][0];
+    }
+    return targets[0];
+  }
+
+  return matches[0]?.country ?? null;
 }
 
 /** Regroupe les pièces exigées par les programmes retenus, par type de service. */
@@ -371,6 +421,7 @@ export function ReportDocument({
     { day: "2-digit", month: "long", year: "numeric" },
   );
   const documentGroups = buildDocumentGroups(matches);
+  const coverCountry = pickCoverCountry(profile, matches);
 
   return (
     <Document
@@ -443,6 +494,17 @@ export function ReportDocument({
             </View>
           ) : null}
         </View>
+
+        {coverCountry ? (
+          <>
+            <Image style={s.cover} src={countryImage(coverCountry, 1400)} />
+            <Text style={s.coverCaption}>
+              {profile.target_countries.length === 1
+                ? `Votre destination : ${pdfText(coverCountry)}`
+                : `${pdfText(coverCountry)} — ${pdfText(inCountry(coverCountry))}, la destination ou vous avez le plus d'options`}
+            </Text>
+          </>
+        ) : null}
 
         <Text style={s.sectionTitle}>Lecture du diagnostic</Text>
         <View style={s.cardSoft}>

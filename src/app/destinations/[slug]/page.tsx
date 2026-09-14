@@ -22,6 +22,7 @@ import {
   Steps,
 } from "@/components/destination/detail-blocks";
 import { DocumentChecklist } from "@/components/destination/document-checklist";
+import { PageViewTracker } from "@/components/analytics/page-view";
 import { Reveal } from "@/components/motion/reveal";
 import { Parallax } from "@/components/motion/parallax";
 import { Footer } from "@/components/site/footer";
@@ -78,6 +79,7 @@ export default async function DestinationPage({
 
   return (
     <main>
+      <PageViewTracker subject={entry.slug} country={entry.country} />
       <PageHeader />
 
       {/* En-tête visuel */}

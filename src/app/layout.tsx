@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Inter } from "next/font/google";
+import { PageViewTracker } from "@/components/analytics/page-view";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -62,7 +64,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-dvh antialiased">{children}</body>
+      <body className="min-h-dvh antialiased">
+        {children}
+        <Suspense fallback={null}>
+          <PageViewTracker />
+        </Suspense>
+      </body>
     </html>
   );
 }

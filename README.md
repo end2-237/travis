@@ -57,8 +57,9 @@ démontrable sans aucune infrastructure. Dès que `NEXT_PUBLIC_SUPABASE_URL` et
 
 ```bash
 # Via la CLI Supabase
-supabase db push                                  # migrations
-psql "$DATABASE_URL" -f supabase/seed.sql         # 50 bourses majeures
+supabase db push                                       # migrations
+psql "$DATABASE_URL" -f supabase/seed.sql              # 50 programmes
+psql "$DATABASE_URL" -f supabase/seed-partners.sql     # emplacements partenaires
 ```
 
 - `supabase/migrations/20260101000000_init.sql` — `scholarships`,
@@ -165,6 +166,47 @@ a demandé la Turquie ne doit pas trouver l'Inde en tête parce qu'il y a une
 meilleure marge de moyenne. Le score global ne retient que les destinations
 visées quand il y en a.
 
+### Back-office
+
+`/admin` — vue d'ensemble, partenaires, destinations, finances.
+
+| Vue | Ce qu'elle montre |
+| --- | --- |
+| Vue d'ensemble | CA, visites, évaluations, conversion, demande par destination |
+| Partenaires | Édition des partenaires commerciaux ; les démarches officielles restent en lecture seule |
+| Destinations | Demande confrontée à l'offre du catalogue, et fiches les plus consultées |
+| Finances | CA sur 30 / 90 jours, moyenne journalière, transactions, taux d'échec |
+
+**Accès.** Cookie signé HMAC, session de 8 heures, httpOnly. Deux variables
+sont requises, sans quoi `/admin` affiche une page d'installation et reste
+fermé :
+
+```bash
+ADMIN_PASSWORD=<un mot de passe long>
+ADMIN_SESSION_SECRET=$(openssl rand -hex 32)
+```
+
+Le middleware ne vérifie que la présence du cookie — `node:crypto` n'existe pas
+sur l'edge runtime. La signature et l'expiration sont vérifiées dans
+`src/app/admin/(protege)/layout.tsx`, côté Node, et de nouveau dans chaque
+Server Action : une action est un point d'entrée HTTP à part entière, appelable
+sans passer par la page.
+
+> Limite assumée : un seul compte, partagé, sans traçabilité par personne. Pour
+> plusieurs administrateurs aux droits distincts, il faudra passer à Supabase
+> Auth et une table de rôles.
+
+**Audience.** `analytics_events` enregistre un événement par page vue.
+Volontairement sans cookie ni identifiant stable : `visitor_hash` est une
+empreinte journalière non réversible (sel + date + IP + agent), suffisante pour
+ne pas compter dix fois la même visite, inutilisable pour suivre quelqu'un d'un
+jour sur l'autre. Ni l'IP ni l'agent ne sont stockés, et le référent n'est
+conservé que par domaine.
+
+**Graphiques.** SVG écrit à la main (`src/components/admin/charts.tsx`), sans
+librairie. Palette validée pour la vision des couleurs — `#2a78d6` / `#eb6834`,
+ΔE CVD 24,7. Une série n'a pas de légende, deux séries en ont toujours une.
+
 ### Mouvement
 
 Pas de librairie d'animation : `src/components/motion/` fournit `Reveal`
@@ -186,6 +228,11 @@ informer ne doit pas pouvoir disparaître à cause d'une animation.
    la procédure exacte, ce qu'il faut apporter, le délai, les frais officiels
    et, le cas échéant, le partenaire Travis et ses frais de service
 13. Avertissements — sur les programmes, sur les démarches, sur les partenaires
+
+Le rapport s'ouvre sur le titre, la synthèse du profil, puis **l'image de la
+destination visée** : celle cochée quand il n'y en a qu'une, sinon celle où le
+candidat a le plus d'options, et à défaut le pays de la meilleure
+correspondance.
 
 L'instantané du matching est figé sur la commande (`orders.match_snapshot`) :
 le rapport reste reproductible même si le catalogue évolue après le paiement.
