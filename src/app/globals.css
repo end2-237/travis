@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Travis — Design tokens
+   Repris au millimètre du kit de design (canvas 1440 × off-white).
+------------------------------------------------------------------- */
+@theme {
+  /* Surfaces */
+  --color-canvas: #f4f4f2;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f7f7f5;
+  --color-surface-sunk: #efefec;
+
+  /* Encre */
+  --color-ink: #101010;
+  --color-ink-soft: #3d3d3d;
+  --color-ink-muted: #8a8a8a;
+  --color-ink-faint: #b4b4b4;
+
+  /* Lignes */
+  --color-line: #e8e8e4;
+  --color-line-strong: #dcdcd7;
+
+  /* Accents */
+  --color-gold: #f2d047;
+  --color-lime: #b9e56d;
+  --color-electric: #1f6feb;
+  --color-star: #f5a524;
+  --color-positive: #17a34a;
+
+  /* Rayons — mesurés sur la maquette */
+  --radius-field: 10px;
+  --radius-btn: 12px;
+  --radius-card: 20px;
+  --radius-panel: 24px;
+  --radius-stage: 28px;
+
+  /* Typo */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Ombres portées de la maquette */
+  --shadow-float: 0 18px 40px -18px rgb(16 16 16 / 0.22);
+  --shadow-card: 0 1px 2px rgb(16 16 16 / 0.04), 0 8px 24px -16px rgb(16 16 16 / 0.18);
+  --shadow-pill: 0 1px 3px rgb(16 16 16 / 0.1);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    letter-spacing: -0.011em;
+  }
+
+  ::selection {
+    background-color: var(--color-ink);
+    color: var(--color-canvas);
+  }
+}
+
+@layer components {
+  /* Conteneur principal : 1240px utiles, gouttière 24px (16px en mobile) */
+  .shell {
+    width: 100%;
+    max-width: 1288px;
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .shell {
+      padding-inline: 24px;
+    }
+  }
+
+  /* Pastille d'intitulé de section « • Who we are? » */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 26px;
+    padding-inline: 12px;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    background-color: var(--color-surface);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--color-ink-soft);
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background-color: var(--color-ink);
+  }
+
+  /* Titre de section — 40/44, tracking serré */
+  .section-title {
+    font-size: clamp(25px, 2.5vw, 36px);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+  }
+
+  /* Dégradé latéral du carrousel de statistiques */
+  .edge-fade {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 9%,
+      #000 91%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 9%,
+      #000 91%,
+      transparent 100%
+    );
+  }
+
+  /* Voile sombre appliqué sur les visuels pleine largeur */
+  .scrim {
+    background-image: linear-gradient(
+      to top,
+      rgb(6 10 8 / 0.72) 0%,
+      rgb(6 10 8 / 0.34) 38%,
+      rgb(6 10 8 / 0.06) 68%,
+      rgb(6 10 8 / 0.22) 100%
+    );
+  }
+
+  .scrim-tile {
+    background-image: linear-gradient(
+      to top,
+      rgb(6 10 8 / 0.82) 0%,
+      rgb(6 10 8 / 0.42) 45%,
+      rgb(6 10 8 / 0.18) 100%
+    );
+  }
+
+  /* Aplat de repli derrière chaque photo (si le CDN est injoignable) */
+  .photo-fallback {
+    background-image: linear-gradient(135deg, #d9ded6 0%, #b9c3b8 50%, #97a596 100%);
+  }
+
+  /* Barre de défilement horizontale discrète (filtres, statistiques) */
+  .rail {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Wordmark géant du pied de page, rogné en bas comme sur la maquette */
+.wordmark {
+  font-size: clamp(76px, 16.9vw, 260px);
+  line-height: 0.78;
+  letter-spacing: -0.055em;
+  font-weight: 700;
+  color: #e3e3df;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

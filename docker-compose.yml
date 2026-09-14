@@ -1,0 +1,41 @@
+services:
+  travis:
+    # En production, tirez l'image construite par GitHub Actions plutôt que
+    # de builder sur le VPS :
+    #   image: ghcr.io/end2-237/travis:latest
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+    image: ghcr.io/end2-237/travis:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER}
+      MONETBIL_SERVICE_KEY: ${MONETBIL_SERVICE_KEY}
+      MONETBIL_SERVICE_SECRET: ${MONETBIL_SERVICE_SECRET}
+      PAYUNIT_API_USER: ${PAYUNIT_API_USER}
+      PAYUNIT_API_PASSWORD: ${PAYUNIT_API_PASSWORD}
+      PAYUNIT_API_KEY: ${PAYUNIT_API_KEY}
+      PAYUNIT_MODE: ${PAYUNIT_MODE}
+      PAYUNIT_WEBHOOK_SECRET: ${PAYUNIT_WEBHOOK_SECRET}
+      WHATSAPP_TOKEN: ${WHATSAPP_TOKEN}
+      WHATSAPP_PHONE_NUMBER_ID: ${WHATSAPP_PHONE_NUMBER_ID}
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
