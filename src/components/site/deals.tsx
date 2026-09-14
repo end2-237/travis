@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight, BadgePercent } from "lucide-react";
+import { Reveal } from "@/components/motion/reveal";
 import { Photo } from "@/components/site/photo";
 import { DEALS } from "@/lib/content";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,7 @@ import { cn } from "@/lib/utils";
 export function Deals() {
   return (
     <section id="opportunites" className="shell pt-16 md:pt-24">
-      <div className="flex items-end justify-between gap-4">
+      <Reveal className="flex items-end justify-between gap-4">
         <h2 className="text-[22px] font-semibold tracking-[-0.03em] md:text-[26px]">
           Des opportunités rien que pour vous&nbsp;!
         </h2>
@@ -22,12 +23,12 @@ export function Deals() {
           Tout voir
           <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={2} />
         </Link>
-      </div>
+      </Reveal>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        {DEALS.map((deal) => (
+        {DEALS.map((deal, index) => (
+          <Reveal key={deal.title} delay={index * 90}>
           <Photo
-            key={deal.title}
             src={deal.image}
             alt={deal.title}
             scrim="tile"
@@ -75,6 +76,7 @@ export function Deals() {
               </div>
             </div>
           </Photo>
+          </Reveal>
         ))}
       </div>
     </section>

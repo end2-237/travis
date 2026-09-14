@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, Lock, Smartphone } from "lucide-react";
+import { Check, Download, Loader2, Smartphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const INCLUDED = [
-  "Audit d'admissibilité détaillé, programme par programme",
-  "Bourses et universités réelles, nommées et chiffrées",
-  "Calendrier des démarches mois par mois",
-  "Checklist documentaire et référents certifiés",
+  "Votre calendrier personnel, calé sur les clôtures de vos programmes",
+  "La checklist documentaire avec les référents de légalisation",
+  "Le récapitulatif chiffré de chaque programme retenu",
+  "Un document imprimable, consultable hors ligne",
 ] as const;
 
 const OPERATORS = [
@@ -78,16 +78,17 @@ export function UnlockPanel({
   return (
     <aside className="rounded-panel bg-white p-6 shadow-card">
       <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-sunk px-2.5 py-1 text-[10.5px] font-medium text-ink-muted">
-        <Lock className="h-3 w-3" strokeWidth={2} />
-        Contenu verrouillé
+        <Download className="h-3 w-3" strokeWidth={2} />
+        Document à emporter
       </span>
 
       <h2 className="mt-4 text-[19px] font-semibold leading-[1.2] tracking-[-0.03em]">
         Feuille de route stratégique
       </h2>
       <p className="mt-2 text-[11.5px] leading-[1.6] text-ink-muted">
-        Le rapport nomme les {total} programme{total > 1 ? "s" : ""} retenu
-        {total > 1 ? "s" : ""} pour votre profil et détaille chaque démarche.
+        Vos {total} programme{total > 1 ? "s" : ""} et leurs démarches, mis en
+        ordre dans un PDF que vous gardez. Les informations restent gratuites
+        et visibles ci-dessus.
       </p>
 
       <ul className="mt-5 space-y-2.5">
@@ -122,7 +123,7 @@ export function UnlockPanel({
           onClick={() => setOpen(true)}
           className="mt-5 h-12 w-full rounded-btn bg-ink text-[13px] font-medium text-white transition-colors hover:bg-ink-soft"
         >
-          Débloquer ma feuille de route (500 FCFA)
+          Obtenir mon PDF (500 FCFA)
         </button>
       ) : (
         <div className="mt-5 rounded-card border border-line bg-surface-soft p-4">

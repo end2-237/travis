@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Play, Star } from "lucide-react";
+import { Reveal } from "@/components/motion/reveal";
 import { Photo } from "@/components/site/photo";
 import { IMG, TESTIMONIALS, VIDEO_QUOTE } from "@/lib/content";
 
@@ -10,10 +11,11 @@ import { IMG, TESTIMONIALS, VIDEO_QUOTE } from "@/lib/content";
 export function Testimonials() {
   return (
     <section className="shell pt-16 md:pt-24">
-      <div className="flex justify-center">
+      <Reveal className="flex justify-center">
         <span className="eyebrow">Témoignages</span>
-      </div>
+      </Reveal>
 
+      <Reveal delay={60}>
       <h2 className="section-title mt-6 text-center">
         Ce que disent nos étudiants
       </h2>
@@ -21,8 +23,10 @@ export function Testimonials() {
         Des profils camerounais, ivoiriens et sénégalais accompagnés jusqu&apos;à
         l&apos;admission — voici leurs retours.
       </p>
+      </Reveal>
 
       <div className="mt-9 grid gap-4 lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1fr)]">
+        <Reveal from="left">
         <Photo
           src={IMG.video}
           alt="Séance d'accompagnement Travis"
@@ -48,11 +52,12 @@ export function Testimonials() {
             <p className="text-[10.5px] text-white/70">{VIDEO_QUOTE.role}</p>
           </div>
         </Photo>
+        </Reveal>
 
         <div className="grid gap-4">
-          {TESTIMONIALS.map((item) => (
+          {TESTIMONIALS.map((item, index) => (
+            <Reveal key={item.name} from="right" delay={index * 90}>
             <figure
-              key={item.name}
               className="flex flex-col rounded-panel bg-white p-6 shadow-card"
             >
               <figcaption className="text-[14px] font-semibold tracking-[-0.02em]">
@@ -94,6 +99,7 @@ export function Testimonials() {
                 </div>
               </div>
             </figure>
+            </Reveal>
           ))}
         </div>
       </div>

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Globe2, Lock, Sparkles, Wallet } from "lucide-react";
+import { Globe2, Sparkles, Wallet } from "lucide-react";
+import { Reveal } from "@/components/motion/reveal";
+import { CountUp } from "@/components/motion/count-up";
+import { MatchList } from "@/components/results/match-list";
 import { Footer } from "@/components/site/footer";
 import { PageHeader } from "@/components/site/page-header";
 import { UnlockPanel } from "@/components/checkout/unlock-panel";
@@ -26,45 +29,38 @@ export default async function ResultsPage({
 
   const { profile, snapshot } = evaluation;
   const { teaser, score, matches } = snapshot;
+  const firstName = profile.full_name?.split(" ")[0] ?? "Votre profil";
 
   return (
     <main>
       <PageHeader />
 
       <section className="shell pt-12 md:pt-16">
-        <span className="eyebrow">Résultat de l&apos;évaluation</span>
+        {/* Diagnostic */}
+        <Reveal>
+          <span className="eyebrow">Résultat de l&apos;évaluation</span>
+          <h1 className="section-title mt-5 max-w-[22ch]">
+            {firstName}, votre score d&apos;admissibilité est de {score}&nbsp;%
+          </h1>
+          <p className="mt-3 max-w-[68ch] text-[13px] leading-[1.65] text-ink-muted">
+            {teaser.headline} Tout est détaillé ci-dessous — noms, montants,
+            échéances et liens officiels. Rien n&apos;est réservé au rapport
+            payant.
+          </p>
+        </Reveal>
 
-        <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10">
-          <div>
-            <h1 className="section-title max-w-[20ch]">
-              {profile.full_name?.split(" ")[0] ?? "Votre profil"}, votre score
-              d&apos;admissibilité est de {score}&nbsp;%
-            </h1>
-            <p className="mt-3 max-w-[62ch] text-[12.5px] leading-[1.6] text-ink-muted">
-              {teaser.headline}
-            </p>
-
-            {/* Jauge du score */}
-            <div className="mt-7 rounded-panel bg-white p-6 shadow-card">
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-[11px] text-ink-muted">
-                    Score d&apos;admissibilité globale
-                  </p>
-                  <p className="mt-1 text-[40px] font-semibold leading-none tracking-[-0.045em]">
-                    {score}
-                    <span className="text-[20px] text-ink-muted">&nbsp;%</span>
-                  </p>
-                </div>
-                <p className="pb-1 text-right text-[11px] text-ink-muted">
-                  {formatGpa(Number(profile.gpa_score))}
-                  <br />
-                  {profile.field_of_study}
-                </p>
-              </div>
-
+        <Reveal delay={80}>
+          <div className="mt-8 grid gap-3 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
+            <div className="rounded-panel bg-ink p-6 text-white">
+              <p className="text-[11px] text-white/60">
+                Score d&apos;admissibilité globale
+              </p>
+              <p className="mt-2 text-[44px] font-semibold leading-none tracking-[-0.045em]">
+                <CountUp value={score} />
+                <span className="text-[22px] text-white/60">&nbsp;%</span>
+              </p>
               <div
-                className="mt-5 h-2 w-full overflow-hidden rounded-full bg-surface-sunk"
+                className="mt-5 h-1.5 w-full overflow-hidden rounded-full bg-white/15"
                 role="progressbar"
                 aria-valuenow={score}
                 aria-valuemin={0}
@@ -72,89 +68,110 @@ export default async function ResultsPage({
                 aria-label="Score d'admissibilité"
               >
                 <div
-                  className="h-full rounded-full bg-ink transition-[width] duration-700"
+                  className="h-full rounded-full bg-white"
                   style={{ width: `${Math.max(score, 3)}%` }}
                 />
               </div>
+              <p className="mt-4 text-[11px] text-white/55">
+                {formatGpa(Number(profile.gpa_score))} ·{" "}
+                {profile.field_of_study} · {profile.current_degree}
+              </p>
             </div>
 
-            {/* Synthèse chiffrée, sans nommer les programmes */}
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              <SummaryTile
-                icon={<Sparkles className="h-4 w-4" strokeWidth={1.7} />}
-                value={String(teaser.fully_funded)}
-                label="bourses à 100 %"
-              />
-              <SummaryTile
-                icon={<Wallet className="h-4 w-4" strokeWidth={1.7} />}
-                value={String(teaser.affordable)}
-                label="options dans votre budget"
-              />
-              <SummaryTile
-                icon={<Globe2 className="h-4 w-4" strokeWidth={1.7} />}
-                value={String(teaser.regions.length)}
-                label="régions accessibles"
-              />
-            </div>
-
-            {/* Liste masquée */}
-            <div className="mt-4 rounded-panel bg-white p-6 shadow-card">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[14px] font-semibold tracking-[-0.02em]">
-                  {teaser.total} correspondance
-                  {teaser.total > 1 ? "s" : ""} identifiée
-                  {teaser.total > 1 ? "s" : ""}
-                </h2>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-sunk px-2.5 py-1 text-[10.5px] text-ink-muted">
-                  <Lock className="h-3 w-3" strokeWidth={2} />
-                  Noms masqués
-                </span>
-              </div>
-
-              <ul className="mt-4 divide-y divide-line">
-                {matches.slice(0, 5).map((match, index) => (
-                  <li
-                    key={match.id}
-                    className="flex items-center gap-3 py-3 first:pt-0"
-                  >
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-surface-sunk text-[11px] font-medium text-ink-muted">
-                      {index + 1}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block h-3 w-[min(72%,280px)] rounded-full bg-surface-sunk" />
-                      <span className="mt-2 block text-[11px] text-ink-muted">
-                        {match.country} ·{" "}
-                        {match.fully_funded
-                          ? "financement intégral"
-                          : "frais réduits"}{" "}
-                        · clôture {match.deadline_month ?? "à confirmer"}
-                      </span>
-                    </span>
-                    <span className="shrink-0 text-[12px] font-semibold tabular-nums">
-                      {match.fit_score}&nbsp;%
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              {teaser.total > 5 ? (
-                <p className="mt-4 text-[11px] text-ink-faint">
-                  + {teaser.total - 5} autre
-                  {teaser.total - 5 > 1 ? "s" : ""} correspondance
-                  {teaser.total - 5 > 1 ? "s" : ""} dans le rapport complet.
-                </p>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="lg:sticky lg:top-6 lg:self-start">
-            <UnlockPanel
-              profileId={profile.id}
-              phoneNumber={profile.phone_number}
-              total={teaser.total}
+            <SummaryTile
+              icon={<Sparkles className="h-4 w-4" strokeWidth={1.7} />}
+              value={teaser.fully_funded}
+              label="bourses à 100 %"
+            />
+            <SummaryTile
+              icon={<Wallet className="h-4 w-4" strokeWidth={1.7} />}
+              value={teaser.affordable}
+              label="options dans votre budget"
+            />
+            <SummaryTile
+              icon={<Globe2 className="h-4 w-4" strokeWidth={1.7} />}
+              value={teaser.regions.length}
+              label="régions accessibles"
             />
           </div>
-        </div>
+        </Reveal>
+
+        {/* Les offres, en clair */}
+        <Reveal>
+          <div className="mt-16 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span className="eyebrow">Vos options</span>
+              <h2 className="section-title mt-4 max-w-[20ch]">
+                {teaser.total} programme{teaser.total > 1 ? "s" : ""}{" "}
+                correspond{teaser.total > 1 ? "ent" : ""} à votre profil
+              </h2>
+            </div>
+            <p className="max-w-[46ch] text-[12px] leading-[1.6] text-ink-muted">
+              Classés par compatibilité. Chaque fiche détaille la procédure, le
+              budget réel, les pièces à fournir et le lien officiel.
+            </p>
+          </div>
+        </Reveal>
+
+        {matches.length === 0 ? (
+          <Reveal>
+            <div className="mt-8 rounded-panel bg-white p-8 text-center shadow-card">
+              <p className="text-[14px] font-semibold">
+                Aucune correspondance directe avec vos critères actuels
+              </p>
+              <p className="mx-auto mt-2.5 max-w-[60ch] text-[12.5px] leading-[1.65] text-ink-muted">
+                Élargissez vos pays cibles ou votre enveloppe budgétaire, ou
+                visez une passerelle : une année de mise à niveau relève souvent
+                un profil au-dessus des seuils.
+              </p>
+            </div>
+          </Reveal>
+        ) : (
+          <div className="mt-8">
+            <MatchList matches={matches} />
+          </div>
+        )}
+
+        {/* Le rapport, en complément — après les offres, jamais avant */}
+        <Reveal>
+          <div className="mt-16 grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
+            <div>
+              <span className="eyebrow">Pour aller plus loin</span>
+              <h2 className="section-title mt-4 max-w-[18ch]">
+                Emportez votre feuille de route
+              </h2>
+              <p className="mt-3 max-w-[58ch] text-[12.5px] leading-[1.65] text-ink-muted">
+                Vous avez maintenant toutes les informations à l&apos;écran. Le
+                rapport ne les cache pas : il les met en ordre. Un document de 5
+                à 8 pages, imprimable et transmissible, avec votre calendrier
+                personnel construit à rebours des clôtures réelles de{" "}
+                <strong className="font-medium text-ink">vos</strong> programmes.
+              </p>
+              <ul className="mt-5 space-y-2 text-[12px] leading-[1.6] text-ink-muted">
+                <li>
+                  — Un calendrier mois par mois calé sur vos échéances, pas sur
+                  un modèle générique.
+                </li>
+                <li>
+                  — La checklist documentaire avec les référents de
+                  légalisation et de traduction assermentée.
+                </li>
+                <li>
+                  — Une version hors ligne, à montrer à votre famille ou à votre
+                  conseiller sans reconnexion.
+                </li>
+              </ul>
+            </div>
+
+            <div className="lg:sticky lg:top-6 lg:self-start">
+              <UnlockPanel
+                profileId={profile.id}
+                phoneNumber={profile.phone_number}
+                total={teaser.total}
+              />
+            </div>
+          </div>
+        </Reveal>
       </section>
 
       <Footer />
@@ -168,18 +185,18 @@ function SummaryTile({
   label,
 }: {
   icon: React.ReactNode;
-  value: string;
+  value: number;
   label: string;
 }) {
   return (
-    <div className="rounded-card border border-line bg-white p-4">
+    <div className="rounded-panel border border-line bg-white p-5">
       <span className="grid h-8 w-8 place-items-center rounded-full bg-surface-sunk text-ink">
         {icon}
       </span>
-      <p className="mt-3 text-[24px] font-semibold leading-none tracking-[-0.04em]">
-        {value}
+      <p className="mt-4 text-[28px] font-semibold leading-none tracking-[-0.04em]">
+        <CountUp value={value} />
       </p>
-      <p className="mt-1.5 text-[11px] text-ink-muted">{label}</p>
+      <p className="mt-2 text-[11px] leading-[1.4] text-ink-muted">{label}</p>
     </div>
   );
 }

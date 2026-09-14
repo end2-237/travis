@@ -1,4 +1,5 @@
 import { ArrowUpRight, Compass, Headset, TrendingUp } from "lucide-react";
+import { Reveal } from "@/components/motion/reveal";
 import { Photo } from "@/components/site/photo";
 import { ABOUT_FEATURES, IMG } from "@/lib/content";
 
@@ -11,10 +12,12 @@ const ICONS = { compass: Compass, headset: Headset } as const;
 export function About() {
   return (
     <section className="shell pt-16 md:pt-24">
-      <span className="eyebrow">À propos</span>
+      <Reveal>
+        <span className="eyebrow">À propos</span>
+      </Reveal>
 
       <div className="mt-5 grid gap-8 lg:grid-cols-2 lg:gap-10">
-        <div>
+        <Reveal>
           <h2 className="section-title max-w-[16ch]">
             Des dossiers solides, des coûts honnêtes
           </h2>
@@ -44,9 +47,9 @@ export function About() {
               );
             })}
           </div>
-        </div>
+        </Reveal>
 
-        <div className="relative">
+        <Reveal delay={120} from="right" className="relative">
           <Photo
             src={IMG.about}
             alt="Résidence universitaire au coucher du soleil"
@@ -55,7 +58,7 @@ export function About() {
           />
 
           {/* Carte flottante — admissibilité */}
-          <div className="absolute left-4 top-6 w-[236px] rounded-[18px] bg-white p-4 shadow-float md:left-6 md:w-[264px]">
+          <div className="float-slow absolute left-4 top-6 w-[236px] rounded-[18px] bg-white p-4 shadow-float md:left-6 md:w-[264px]">
             <p className="text-[12px] font-semibold tracking-[-0.02em]">
               Statistiques
             </p>
@@ -83,7 +86,7 @@ export function About() {
           </div>
 
           {/* Carte flottante — coût de la feuille de route */}
-          <div className="absolute bottom-6 right-4 w-[248px] rounded-[18px] bg-white p-4 shadow-float md:right-6 md:w-[276px]">
+          <div className="float-slow-delayed absolute bottom-6 right-4 w-[248px] rounded-[18px] bg-white p-4 shadow-float md:right-6 md:w-[276px]">
             <div className="flex items-center justify-between">
               <p className="text-[12px] font-semibold tracking-[-0.02em]">
                 Feuille de route
@@ -113,7 +116,7 @@ export function About() {
               </span>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

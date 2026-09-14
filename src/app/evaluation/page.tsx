@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/site/page-header";
 export const metadata: Metadata = {
   title: "Évaluation d'admissibilité",
   description:
-    "Trois écrans pour confronter votre moyenne, votre filière et votre budget à 380 bourses et universités réelles.",
+    "Trois écrans pour confronter votre moyenne, votre filière et votre budget aux 50 programmes du catalogue.",
 };
 
 export default function EvaluationPage() {

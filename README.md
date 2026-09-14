@@ -1,8 +1,17 @@
 # Travis
 
 Moteur SaaS d'admissibilité académique et d'orientation internationale.
-L'étudiant évalue gratuitement son profil, puis débloque une feuille de route
-stratégique complète en PDF pour **500 FCFA** via Mobile Money / Orange Money.
+L'étudiant évalue gratuitement son profil, consulte **l'intégralité** des
+programmes compatibles — noms, montants, échéances, procédure et liens
+officiels — puis emporte sa feuille de route en PDF pour **500 FCFA** via
+Mobile Money / Orange Money.
+
+> **Ce qui est payant, et ce qui ne l'est pas.** L'information est gratuite :
+> rien n'est masqué derrière le paiement. Les 500 FCFA achètent la mise en
+> forme — un document imprimable, transmissible et consultable hors ligne,
+> avec un calendrier construit à rebours des clôtures réelles du candidat.
+> Ce choix est l'inverse du modèle « teaser » du SRS initial, et il est
+> délibéré : on ne fait pas payer pour voir, on fait payer pour emporter.
 
 ---
 
@@ -54,7 +63,23 @@ psql "$DATABASE_URL" -f supabase/seed.sql         # 50 bourses majeures
 
 - `supabase/migrations/20260101000000_init.sql` — `scholarships`,
   `student_profiles`, `orders`, index, RLS et bucket `reports`.
-- `supabase/seed.sql` — 50 programmes récurrents, idempotent.
+- `supabase/migrations/20260201000000_catalog_details.sql` — `slug` et
+  `official_website`, pour les fiches détaillées.
+- `supabase/seed.sql` — **fichier généré**, ne pas éditer à la main.
+
+### Le catalogue
+
+`src/data/programs.ts` est la source de vérité du contenu : 50 programmes,
+chacun avec son site officiel vérifié, ce que la bourse couvre, ce qu'elle
+laisse à charge, et son mode de sélection. `src/data/countries.ts` porte les
+faits partagés par destination (visa, logement, coût de la vie, rentrées),
+énoncés une fois pour rester cohérents d'une fiche à l'autre.
+
+```bash
+npm run seed:generate   # régénère supabase/seed.sql depuis le catalogue
+```
+
+La base et le mode démonstration servent donc exactement le même contenu.
 
 ### Row Level Security
 
@@ -74,7 +99,8 @@ psql "$DATABASE_URL" -f supabase/seed.sql         # 50 bourses majeures
 | --- | --- | --- |
 | 1 | `/evaluation` | Formulaire en 3 écrans : identité & contact, parcours académique, objectifs & budget. Validation Zod à chaque écran. |
 | 2 | Server Action | Profil persisté, puis moteur de matching (moyenne ≥ minimum, niveau visé, filière éligible) et scoring 0–100. |
-| 3 | `/resultats/[profileId]` | Teaser **gratuit** : score global, volumes et régions. Les noms des programmes restent masqués. |
+| 3 | `/resultats/[profileId]` | **Tout est visible** : chaque programme retenu est nommé, chiffré, daté et relié à son site officiel. |
+| 3 bis | `/destinations/[slug]` | Fiche complète du programme : couverture, budget réel, logement, procédure, pièces, visa, lien officiel. |
 | 4 | `/api/checkout` | Ouverture du tunnel Mobile Money à 500 FCFA, création de la commande `PENDING`. |
 | 5 | `/api/webhooks/payment` | Signature vérifiée → commande `SUCCESS` → PDF généré et stocké → lien WhatsApp envoyé. |
 | 6 | `/telechargement/[orderId]` | Téléchargement par URL signée valable une heure. |
@@ -96,6 +122,16 @@ supabase
 vise un Master tout en restant éligible aux programmes de Licence. Le score de
 compatibilité combine marge de moyenne (45 pts), budget (30), pays visé (15) et
 financement intégral (10).
+
+### Mouvement
+
+Pas de librairie d'animation : `src/components/motion/` fournit `Reveal`
+(IntersectionObserver), `Parallax` (rAF, actif seulement à l'écran) et
+`CountUp`. L'état masqué des blocs révélés est porté par une règle CSS
+conditionnée à `data-js="on"` — sans JavaScript, à l'impression, ou pour un
+robot d'indexation, **le contenu reste visible**. Une page qui existe pour
+informer ne doit pas pouvoir disparaître à cause d'une animation.
+`prefers-reduced-motion` neutralise l'ensemble.
 
 ### Rapport PDF
 

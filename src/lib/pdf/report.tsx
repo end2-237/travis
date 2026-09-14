@@ -84,6 +84,11 @@ const s = StyleSheet.create({
   },
   matchTitle: { fontSize: 11, fontFamily: "Helvetica-Bold", letterSpacing: -0.2 },
   matchMeta: { fontSize: 8, color: MUTED, marginTop: 2 },
+  link: {
+    fontSize: 8,
+    color: "#1f6feb",
+    marginTop: 8,
+  },
   pill: {
     fontSize: 7.5,
     color: MUTED,
@@ -281,7 +286,9 @@ export function ReportDocument({
         <Text style={s.pageTitle}>Programmes recommandés</Text>
         <Text style={s.lede}>
           Classés par compatibilité décroissante avec votre profil. Le taux
-          indiqué intègre la moyenne, le budget et vos destinations visées.
+          intègre la moyenne, le budget et vos destinations visées. Chaque
+          fiche renvoie à l&apos;appel à candidatures officiel : vérifiez-y les
+          dates avant tout dépôt.
         </Text>
 
         {top.length === 0 ? (
@@ -418,6 +425,16 @@ function MatchCard({
           <Text style={s.value}>{pdfText(match.deadline_month) || "À confirmer"}</Text>
         </View>
       </View>
+
+      {match.official_website ?? match.application_url ? (
+        <Text style={s.link}>
+          Appel officiel :{" "}
+          {(match.official_website ?? match.application_url ?? "").replace(
+            /^https?:\/\//,
+            "",
+          )}
+        </Text>
+      ) : null}
 
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {match.funding_coverage ? (

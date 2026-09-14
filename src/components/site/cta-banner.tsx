@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { Reveal } from "@/components/motion/reveal";
 import { Photo } from "@/components/site/photo";
 import { IMG } from "@/lib/content";
 
@@ -10,6 +11,7 @@ import { IMG } from "@/lib/content";
 export function CtaBanner() {
   return (
     <section id="contact" className="shell pt-16 md:pt-24">
+      <Reveal>
       <Photo
         src={IMG.banner}
         alt="Sentier de randonnée traversant une forêt"
@@ -44,6 +46,7 @@ export function CtaBanner() {
           <span className="h-1.5 w-1.5 rounded-full bg-white/45" />
         </div>
       </Photo>
+      </Reveal>
     </section>
   );
 }

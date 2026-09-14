@@ -4,6 +4,8 @@ export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED";
 
 export interface Scholarship {
   id: string;
+  /** Identifiant lisible, utilisé dans l'URL de la fiche détaillée. */
+  slug: string;
   title: string;
   country: string;
   degree_levels: string[];
@@ -17,6 +19,7 @@ export interface Scholarship {
   annual_cost_xaf: number;
   fully_funded: boolean;
   application_url: string | null;
+  official_website: string | null;
   notes: string | null;
   is_active: boolean;
   created_at: string;

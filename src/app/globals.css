@@ -170,6 +170,82 @@
   }
 }
 
+/* ------------------------------------------------------------------
+   Mouvement
+------------------------------------------------------------------- */
+
+/* Transition douce entre les pages, là où le navigateur la prend en charge. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Lissage du défilement ancré, sous la barre de sommaire collante. */
+:root {
+  scroll-padding-top: 72px;
+}
+
+/* Révélation au défilement.
+   L'état masqué est conditionné à data-js="on" : sans JavaScript, sans
+   IntersectionObserver, ou à l'impression, le contenu reste visible. */
+.travis-reveal {
+  transition:
+    opacity var(--reveal-duration, 700ms) cubic-bezier(0.16, 1, 0.3, 1)
+      var(--reveal-delay, 0ms),
+    transform var(--reveal-duration, 700ms) cubic-bezier(0.16, 1, 0.3, 1)
+      var(--reveal-delay, 0ms);
+}
+
+[data-js="on"] .travis-reveal[data-shown="false"] {
+  opacity: 0;
+  transform: translate3d(var(--reveal-x, 0), var(--reveal-y, 22px), 0);
+  will-change: opacity, transform;
+}
+
+@keyframes travis-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -7px, 0);
+  }
+}
+
+/* Léger flottement des cartes détachées du hero et du bloc « à propos ». */
+.float-slow {
+  animation: travis-float 7s ease-in-out infinite;
+}
+
+.float-slow-delayed {
+  animation: travis-float 7s ease-in-out 1.4s infinite;
+}
+
+/* Soulignement qui se déploie au survol, pour les liens de contenu. */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.link-underline:hover {
+  background-size: 100% 1px;
+}
+
+@media print {
+  .travis-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Wordmark géant du pied de page, rogné en bas comme sur la maquette */
 .wordmark {
   font-size: clamp(76px, 16.9vw, 260px);
@@ -183,6 +259,21 @@
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  @view-transition {
+    navigation: none;
+  }
+
+  .float-slow,
+  .float-slow-delayed {
+    animation: none;
+  }
+
+  .travis-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 
   *,

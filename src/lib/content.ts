@@ -33,10 +33,10 @@ export const IMG = {
 
 /** Section « Our Achievements » — 4 tuiles, la 3ᵉ mise en avant. */
 export const ACHIEVEMENTS = [
-  { value: "12,4K+", label: "profils évalués" },
-  { value: "380+", label: "bourses référencées" },
-  { value: "48", label: "pays couverts", featured: true },
-  { value: "96%", label: "dossiers conformes" },
+  { value: "29", label: "destinations couvertes" },
+  { value: "50", label: "programmes détaillés" },
+  { value: "31", label: "bourses à 100 %", featured: true },
+  { value: "500", label: "FCFA le rapport" },
 ] as const;
 
 /** Section « Exclusive deals just for you! » — 2 cartes visuelles. */
@@ -173,7 +173,7 @@ export const ABOUT_FEATURES = [
   {
     icon: "compass" as const,
     title: "Un diagnostic chiffré, pas une promesse",
-    body: "Votre moyenne, votre filière et votre budget sont confrontés à 380 programmes réels. Aucun résultat inventé.",
+    body: "Votre moyenne, votre filière et votre budget sont confrontés à 50 programmes réels, sources officielles à l'appui. Aucun résultat inventé.",
   },
   {
     icon: "headset" as const,

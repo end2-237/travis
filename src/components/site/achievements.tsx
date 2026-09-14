@@ -1,3 +1,5 @@
+import { CountUp } from "@/components/motion/count-up";
+import { Reveal } from "@/components/motion/reveal";
 import { ACHIEVEMENTS } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
@@ -8,18 +10,20 @@ import { cn } from "@/lib/utils";
 export function Achievements() {
   return (
     <section className="pt-14 md:pt-20">
-      <div className="shell flex justify-center">
+      <Reveal className="shell flex justify-center">
         <span className="eyebrow">Nos résultats</span>
-      </div>
+      </Reveal>
 
       <div className="relative mt-7">
         <div className="edge-fade">
           <div className="rail shell flex snap-x gap-3 pb-2 md:grid md:grid-cols-4">
-            {ACHIEVEMENTS.map((item) => {
+            {ACHIEVEMENTS.map((item, index) => {
               const featured = "featured" in item && item.featured;
+              const numeric = Number(item.value);
               return (
-                <div
+                <Reveal
                   key={item.label}
+                  delay={index * 80}
                   className={cn(
                     "flex min-w-[190px] snap-start flex-col items-center justify-center rounded-card px-6 py-7 text-center transition-colors md:min-w-0",
                     featured
@@ -33,7 +37,11 @@ export function Achievements() {
                       featured ? "text-ink" : "text-ink-faint",
                     )}
                   >
-                    {item.value}
+                    {Number.isFinite(numeric) ? (
+                      <CountUp value={numeric} />
+                    ) : (
+                      item.value
+                    )}
                   </span>
                   <span
                     className={cn(
@@ -43,7 +51,7 @@ export function Achievements() {
                   >
                     {item.label}
                   </span>
-                </div>
+                </Reveal>
               );
             })}
           </div>

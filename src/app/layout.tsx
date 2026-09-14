@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s · Travis",
   },
   description:
-    "Évaluez gratuitement votre admissibilité sur 380 bourses et universités, puis débloquez votre feuille de route stratégique en PDF pour 500 FCFA via Mobile Money.",
+    "Évaluez gratuitement votre admissibilité sur 50 bourses et universités, consultez la procédure complète de chacune, puis emportez votre feuille de route en PDF pour 500 FCFA.",
   keywords: [
     "bourses d'études",
     "orientation internationale",
@@ -50,6 +50,18 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr" className={inter.variable}>
+      <head>
+        {/*
+          Marque le document comme piloté par JavaScript, avant tout rendu
+          peint. Les blocs animés ne se masquent que sous ce drapeau : si le
+          script ne s'exécute pas, la page reste entièrement lisible.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.dataset.js="on"`,
+          }}
+        />
+      </head>
       <body className="min-h-dvh antialiased">{children}</body>
     </html>
   );
