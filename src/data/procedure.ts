@@ -7,7 +7,19 @@
  * ses étapes propres.
  */
 
+import type { ServiceKind } from "@/data/services";
+
 export type ProgramKind = "gouvernementale" | "universitaire" | "consortium";
+
+/**
+ * Pièce du dossier, rattachée au service qui la produit.
+ * Ce lien permet d'afficher le bon interlocuteur en regard de chaque
+ * document, à l'écran comme dans le rapport.
+ */
+export interface RequiredDocument {
+  label: string;
+  service: ServiceKind;
+}
 
 export const PROCEDURE_TEMPLATES: Record<ProgramKind, string[]> = {
   gouvernementale: [
@@ -39,15 +51,39 @@ export const PROCEDURE_TEMPLATES: Record<ProgramKind, string[]> = {
 };
 
 /** Pièces exigées par pratiquement tous les programmes. */
-export const BASE_DOCUMENTS = [
-  "Relevés de notes de toutes les années du dernier cycle, légalisés",
-  "Diplôme ou attestation de réussite, légalisé",
-  "Passeport biométrique valide au moins 18 mois",
-  "Acte de naissance sécurisé de moins de six mois",
-  "Lettre de motivation et projet d'études, une version par programme",
-  "Curriculum vitae au format demandé par le programme",
-  "Deux lettres de recommandation signées et tamponnées",
-  "Photos d'identité aux normes du pays d'accueil",
+export const BASE_DOCUMENTS: RequiredDocument[] = [
+  {
+    label: "Relevés de notes de toutes les années du dernier cycle, légalisés",
+    service: "legalisation",
+  },
+  {
+    label: "Diplôme ou attestation de réussite, légalisé",
+    service: "legalisation",
+  },
+  {
+    label: "Passeport biométrique valide au moins 18 mois",
+    service: "passeport",
+  },
+  {
+    label: "Acte de naissance sécurisé de moins de six mois",
+    service: "etat-civil",
+  },
+  {
+    label: "Lettre de motivation et projet d'études, une version par programme",
+    service: "visa",
+  },
+  {
+    label: "Curriculum vitae au format demandé par le programme",
+    service: "visa",
+  },
+  {
+    label: "Deux lettres de recommandation signées et tamponnées",
+    service: "legalisation",
+  },
+  {
+    label: "Photos d'identité aux normes du pays d'accueil",
+    service: "photo",
+  },
 ];
 
 /** Pièces conditionnelles, ajoutées selon les caractéristiques du programme. */
@@ -56,36 +92,58 @@ export function conditionalDocuments(options: {
   maxAge: number | null;
   fullyFunded: boolean;
   country: string;
-}): string[] {
-  const extra: string[] = [];
+}): RequiredDocument[] {
+  const extra: RequiredDocument[] = [];
 
   if (/IELTS|TOEFL|anglais/i.test(options.languageRequirements)) {
-    extra.push(
-      "Attestation de niveau d'anglais (IELTS, TOEFL ou équivalent reconnu)",
-    );
+    extra.push({
+      label: "Attestation de niveau d'anglais (IELTS, TOEFL ou équivalent reconnu)",
+      service: "langue",
+    });
   }
   if (/français|francais/i.test(options.languageRequirements)) {
-    extra.push("Attestation de niveau de français (TCF, DELF ou DALF)");
+    extra.push({
+      label: "Attestation de niveau de français (TCF, DELF ou DALF)",
+      service: "langue",
+    });
   }
-  if (/turc|japonais|chinois|coréen|allemand|italien|roumain|polonais/i.test(
-    options.languageRequirements,
-  )) {
-    extra.push(
-      "Justificatif de langue locale, ou inscription à l'année préparatoire proposée",
-    );
+  if (
+    /turc|japonais|chinois|coréen|allemand|italien|roumain|polonais/i.test(
+      options.languageRequirements,
+    )
+  ) {
+    extra.push({
+      label:
+        "Justificatif de langue locale, ou inscription à l'année préparatoire proposée",
+      service: "langue",
+    });
   }
   if (options.maxAge !== null) {
-    extra.push(
-      `Pièce d'identité prouvant que vous aviez moins de ${options.maxAge} ans à la date de clôture`,
-    );
+    extra.push({
+      label: `Pièce d'identité prouvant que vous aviez moins de ${options.maxAge} ans à la date de clôture`,
+      service: "etat-civil",
+    });
   }
   if (!options.fullyFunded) {
-    extra.push(
-      "Preuve de ressources ou attestation de prise en charge notariée",
-    );
+    extra.push({
+      label: "Preuve de ressources ou attestation de prise en charge notariée",
+      service: "financier",
+    });
   }
 
-  extra.push("Certificat médical et carnet de vaccination international");
+  // La traduction assermentée n'est pas une pièce en soi mais une étape
+  // obligée dès que le dossier n'est pas instruit en français.
+  if (!/français courant|Français uniquement/i.test(options.languageRequirements)) {
+    extra.push({
+      label: "Traduction assermentée des pièces académiques et d'état civil",
+      service: "traduction",
+    });
+  }
+
+  extra.push({
+    label: "Certificat médical et carnet de vaccination international",
+    service: "medical",
+  });
 
   return extra;
 }

@@ -5,6 +5,7 @@ import {
   PROCEDURE_TEMPLATES,
   conditionalDocuments,
   translationNeeds,
+  type RequiredDocument,
 } from "@/data/procedure";
 import { PROGRAMS, type ProgramSpec } from "@/data/programs";
 
@@ -16,8 +17,8 @@ export interface CatalogEntry extends ProgramSpec {
   country_profile: CountryProfile;
   /** Procédure de candidature, étape par étape. */
   application_steps: string[];
-  /** Pièces à constituer, tronc commun et conditionnelles. */
-  required_documents: string[];
+  /** Pièces à constituer, chacune rattachée au service qui la produit. */
+  required_documents: RequiredDocument[];
   /** Besoins de traduction assermentée. */
   translation: string;
   /** Budget annuel total estimé : reste à charge + logement + vie courante. */

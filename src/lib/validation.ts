@@ -51,7 +51,16 @@ export const stepGoalsSchema = z.object({
 
 export const evaluationSchema = stepIdentitySchema
   .extend(stepAcademicSchema.shape)
-  .extend(stepGoalsSchema.shape);
+  .extend(stepGoalsSchema.shape)
+  .extend({
+    /** Slug du programme quand l'évaluation cible une seule opportunité. */
+    focus_program: z
+      .string()
+      .trim()
+      .max(120)
+      .optional()
+      .transform((v) => (v === "" ? undefined : v)),
+  });
 
 export type EvaluationInput = z.infer<typeof evaluationSchema>;
 export type StepIdentityInput = z.infer<typeof stepIdentitySchema>;

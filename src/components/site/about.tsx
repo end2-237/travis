@@ -104,7 +104,7 @@ export function About() {
                 <p className="truncate text-[11.5px] font-medium">
                   Rapport personnalisé
                 </p>
-                <p className="text-[10px] text-ink-muted">8 pages · Mobile Money</p>
+                <p className="text-[10px] text-ink-muted">11 à 13 pages · Mobile Money</p>
               </div>
             </div>
             <div className="mt-3 flex items-center justify-between">

@@ -25,6 +25,7 @@ import {
   stepGoalsSchema,
   stepIdentitySchema,
 } from "@/lib/validation";
+import { catalogEntry } from "@/data/catalog";
 import { submitEvaluation, type EvaluationState } from "@/server/evaluation";
 
 const STEPS = [
@@ -56,7 +57,13 @@ export function StepperForm() {
     language_level: "",
   }));
 
-  const [countries, setCountries] = useState<string[]>([]);
+  // Évaluation ciblée : le programme visé est transmis par la fiche détaillée.
+  const focusSlug = params.get("program") ?? "";
+  const focus = focusSlug ? catalogEntry(focusSlug) : null;
+
+  const [countries, setCountries] = useState<string[]>(() =>
+    focus ? [focus.country] : [],
+  );
 
   // Les erreurs saisies localement prévalent sur celles remontées par l'action.
   const allErrors = useMemo(
@@ -185,6 +192,28 @@ export function StepperForm() {
       >
         {/* Champs conservés hors de l'écran courant */}
         <HiddenValues values={values} countries={countries} step={step} />
+        {focus ? (
+          <input type="hidden" name="focus_program" value={focus.slug} />
+        ) : null}
+
+        {focus ? (
+          <div className="mb-6 rounded-card border border-line bg-surface-soft p-4">
+            <p className="text-[10.5px] font-medium uppercase tracking-[0.06em] text-ink-muted">
+              Évaluation ciblée
+            </p>
+            <p className="mt-1.5 text-[13px] font-semibold leading-[1.35]">
+              {focus.title}
+            </p>
+            <p className="mt-1 text-[11px] text-ink-muted">
+              {focus.institution} · {focus.country} · seuil{" "}
+              {focus.min_gpa_20.toFixed(2).replace(".", ",")}/20
+            </p>
+            <p className="mt-2.5 text-[11px] leading-[1.55] text-ink-faint">
+              Vous obtiendrez un verdict critère par critère sur ce programme,
+              puis les autres options compatibles avec votre profil.
+            </p>
+          </div>
+        ) : null}
 
         <p className="text-[11px] text-ink-faint lg:hidden">
           Étape {step + 1} sur {STEPS.length}

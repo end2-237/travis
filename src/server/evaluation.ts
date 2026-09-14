@@ -28,6 +28,7 @@ export async function submitEvaluation(
     target_countries: formData.getAll("target_countries").map(String),
     max_budget_xaf: Number(formData.get("max_budget_xaf") ?? Number.NaN),
     language_level: String(formData.get("language_level") ?? ""),
+    focus_program: String(formData.get("focus_program") ?? ""),
   };
 
   const parsed = evaluationSchema.safeParse(raw);

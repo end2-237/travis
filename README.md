@@ -123,6 +123,48 @@ vise un Master tout en restant éligible aux programmes de Licence. Le score de
 compatibilité combine marge de moyenne (45 pts), budget (30), pays visé (15) et
 financement intégral (10).
 
+### Services et partenaires
+
+`src/data/services.ts` décrit chaque service nécessaire au dossier
+d'immigration : état civil, légalisation, traduction assermentée, apostille,
+certification de langue, passeport, santé, photos, justificatifs financiers et
+accompagnement consulaire. Chaque entrée porte sa procédure pas à pas, ce
+qu'il faut apporter, le délai, les frais et le piège fréquent.
+
+Deux natures cohabitent, et la distinction est visible dans l'interface :
+
+- `institution` — organisme public ou centre agréé. La procédure décrite est
+  celle publiée par l'administration, valable sans accord commercial.
+- `partner` — partenaire commercial Travis. Tant que `status` vaut
+  `a_confirmer`, l'interface annonce le service **sans afficher d'adresse ni
+  de tarif** : un candidat ne doit jamais se déplacer sur la foi d'une donnée
+  non vérifiée.
+
+Pour référencer un partenaire : renseigner les champs de contact et de tarif
+dans `src/data/services.ts`, puis passer `status` à `"actif"`. Rien d'autre à
+modifier — la fiche de destination, la page de résultats et le PDF s'alimentent
+de la même source.
+
+Chaque pièce du dossier est rattachée à un service via
+`src/data/procedure.ts`, ce qui permet d'afficher le bon interlocuteur en
+regard du bon document, au moment où le candidat en a besoin.
+
+### Évaluation ciblée
+
+Depuis la fiche d'un programme, `/evaluation?program=<slug>` produit un verdict
+critère par critère sur cette seule opportunité — moyenne, niveau, filière,
+budget, langue — **y compris lorsque le candidat n'est pas éligible** : c'est
+précisément là qu'il a besoin de savoir ce qui bloque et ce qu'il peut y faire.
+Les autres options compatibles suivent.
+
+### Priorité aux destinations demandées
+
+Les pays cochés passent devant, dans leur propre bloc. Le score de
+compatibilité ne départage qu'à l'intérieur de chaque groupe : un candidat qui
+a demandé la Turquie ne doit pas trouver l'Inde en tête parce qu'il y a une
+meilleure marge de moyenne. Le score global ne retient que les destinations
+visées quand il y en a.
+
 ### Mouvement
 
 Pas de librairie d'animation : `src/components/motion/` fournit `Reveal`
@@ -135,12 +177,15 @@ informer ne doit pas pouvoir disparaître à cause d'une animation.
 
 ### Rapport PDF
 
-5 à 8 pages selon le nombre de correspondances :
+11 à 13 pages selon le nombre de correspondances :
 
 1. Synthèse du profil et audit d'admissibilité
-2. – 3. Programmes recommandés, chiffrés et classés
+2. – 3. Programmes recommandés, chiffrés et classés, avec l'appel officiel
 4. Calendrier des démarches mois par mois, calculé à rebours des clôtures réelles
-5. Checklist documentaire (légalisation, traduction assermentée) et référents
+5. – 12. Constitution du dossier, pièce par pièce : l'organisme qui la délivre,
+   la procédure exacte, ce qu'il faut apporter, le délai, les frais officiels
+   et, le cas échéant, le partenaire Travis et ses frais de service
+13. Avertissements — sur les programmes, sur les démarches, sur les partenaires
 
 L'instantané du matching est figé sur la commande (`orders.match_snapshot`) :
 le rapport reste reproductible même si le catalogue évolue après le paiement.

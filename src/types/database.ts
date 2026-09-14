@@ -36,6 +36,8 @@ export interface StudentProfile {
   city: string | null;
   target_countries: string[];
   language_level: string | null;
+  /** Programme visé quand l'évaluation porte sur une seule opportunité. */
+  focus_program: string | null;
   created_at: string;
 }
 
@@ -60,6 +62,34 @@ export interface MatchSnapshot {
   score: number;
   matches: ScoredScholarship[];
   teaser: TeaserSummary;
+  /** Verdict détaillé quand l'évaluation cible un programme précis. */
+  focus: ProgramVerdict | null;
+}
+
+/** Critère d'admissibilité évalué individuellement. */
+export interface EligibilityCheck {
+  label: string;
+  passed: boolean;
+  /** Ce que le candidat a, face à ce qui est exigé. */
+  detail: string;
+  /** Action concrète quand le critère n'est pas rempli. */
+  remedy: string | null;
+}
+
+/**
+ * Résultat d'une évaluation ciblée sur un programme unique.
+ * Contrairement au matching global, il est produit même lorsque le candidat
+ * n'est pas éligible : c'est précisément là qu'il a besoin de savoir pourquoi.
+ */
+export interface ProgramVerdict {
+  slug: string;
+  title: string;
+  country: string;
+  institution: string | null;
+  eligible: boolean;
+  fit_score: number;
+  checks: EligibilityCheck[];
+  headline: string;
 }
 
 export interface ScoredScholarship extends Scholarship {
@@ -76,6 +106,8 @@ export interface ScoredScholarship extends Scholarship {
 /** Résumé anonymisé affiché gratuitement (noms masqués). */
 export interface TeaserSummary {
   total: number;
+  /** Correspondances situées dans les destinations demandées. */
+  targeted: number;
   fully_funded: number;
   affordable: number;
   regions: { region: string; count: number }[];

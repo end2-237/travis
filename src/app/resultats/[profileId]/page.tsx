@@ -4,6 +4,8 @@ import { Globe2, Sparkles, Wallet } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { CountUp } from "@/components/motion/count-up";
 import { MatchList } from "@/components/results/match-list";
+import { ProgramVerdictCard } from "@/components/results/program-verdict";
+import { DossierSection } from "@/components/results/dossier-section";
 import { Footer } from "@/components/site/footer";
 import { PageHeader } from "@/components/site/page-header";
 import { UnlockPanel } from "@/components/checkout/unlock-panel";
@@ -28,7 +30,7 @@ export default async function ResultsPage({
   if (!evaluation) notFound();
 
   const { profile, snapshot } = evaluation;
-  const { teaser, score, matches } = snapshot;
+  const { teaser, score, matches, focus } = snapshot;
   const firstName = profile.full_name?.split(" ")[0] ?? "Votre profil";
 
   return (
@@ -48,6 +50,15 @@ export default async function ResultsPage({
             payant.
           </p>
         </Reveal>
+
+        {/* Verdict ciblé, avant tout le reste quand il existe */}
+        {focus ? (
+          <Reveal delay={60}>
+            <div className="mt-8">
+              <ProgramVerdictCard verdict={focus} />
+            </div>
+          </Reveal>
+        ) : null}
 
         <Reveal delay={80}>
           <div className="mt-8 grid gap-3 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
@@ -100,7 +111,9 @@ export default async function ResultsPage({
         <Reveal>
           <div className="mt-16 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span className="eyebrow">Vos options</span>
+              <span className="eyebrow">
+                {focus ? "Autres options" : "Vos options"}
+              </span>
               <h2 className="section-title mt-4 max-w-[20ch]">
                 {teaser.total} programme{teaser.total > 1 ? "s" : ""}{" "}
                 correspond{teaser.total > 1 ? "ent" : ""} à votre profil
@@ -132,6 +145,26 @@ export default async function ResultsPage({
           </div>
         )}
 
+        {/* Constituer le dossier — après le choix, avant le rapport */}
+        {matches.length > 0 ? (
+          <Reveal>
+            <div className="mt-16">
+              <span className="eyebrow">Constituer votre dossier</span>
+              <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <h2 className="section-title max-w-[20ch]">
+                  Les démarches, dans l&apos;ordre où il faut les faire
+                </h2>
+                <p className="max-w-[46ch] text-[12px] leading-[1.6] text-ink-muted md:text-right">
+                  Qui délivre chaque pièce, avec quoi s&apos;y présenter, en
+                  combien de temps et à quel coût. Faire traduire avant de
+                  légaliser oblige à tout refaire.
+                </p>
+              </div>
+              <DossierSection matches={matches} />
+            </div>
+          </Reveal>
+        ) : null}
+
         {/* Le rapport, en complément — après les offres, jamais avant */}
         <Reveal>
           <div className="mt-16 grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
@@ -142,9 +175,10 @@ export default async function ResultsPage({
               </h2>
               <p className="mt-3 max-w-[58ch] text-[12.5px] leading-[1.65] text-ink-muted">
                 Vous avez maintenant toutes les informations à l&apos;écran. Le
-                rapport ne les cache pas : il les met en ordre. Un document de 5
-                à 8 pages, imprimable et transmissible, avec votre calendrier
-                personnel construit à rebours des clôtures réelles de{" "}
+                rapport ne les cache pas : il les met en ordre. Un document de
+                11 à 13 pages, imprimable et transmissible, avec votre
+                calendrier personnel et la démarche complète pour chaque pièce
+                du dossier de{" "}
                 <strong className="font-medium text-ink">vos</strong> programmes.
               </p>
               <ul className="mt-5 space-y-2 text-[12px] leading-[1.6] text-ink-muted">
@@ -153,8 +187,8 @@ export default async function ResultsPage({
                   un modèle générique.
                 </li>
                 <li>
-                  — La checklist documentaire avec les référents de
-                  légalisation et de traduction assermentée.
+                  — Chaque pièce du dossier avec sa procédure, l&apos;organisme
+                  qui la délivre, le délai et le coût.
                 </li>
                 <li>
                   — Une version hors ligne, à montrer à votre famille ou à votre

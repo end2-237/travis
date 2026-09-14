@@ -21,6 +21,7 @@ import {
   StatTile,
   Steps,
 } from "@/components/destination/detail-blocks";
+import { DocumentChecklist } from "@/components/destination/document-checklist";
 import { Reveal } from "@/components/motion/reveal";
 import { Parallax } from "@/components/motion/parallax";
 import { Footer } from "@/components/site/footer";
@@ -132,11 +133,17 @@ export default async function DestinationPage({
               {item.label}
             </a>
           ))}
+          <Link
+            href={`/evaluation?program=${entry.slug}`}
+            className="ml-auto hidden shrink-0 items-center gap-1.5 rounded-full bg-ink px-4 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-ink-soft sm:inline-flex"
+          >
+            Évaluer mon profil ici
+          </Link>
           <a
             href={entry.official_website}
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-auto hidden shrink-0 items-center gap-1.5 rounded-full bg-ink px-4 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-ink-soft sm:inline-flex"
+            className="hidden shrink-0 items-center gap-1.5 rounded-full border border-line bg-white px-4 py-1.5 text-[12px] font-medium text-ink transition-colors hover:bg-surface-soft sm:inline-flex"
           >
             Site officiel
             <ExternalLink className="h-3 w-3" strokeWidth={2} />
@@ -363,27 +370,13 @@ export default async function DestinationPage({
             id="dossier"
             eyebrow="Dossier"
             title="Les pièces à réunir"
-            lede="Commencez par la légalisation et la traduction : ce sont les deux postes qui font rater les échéances."
+            lede="Dépliez chaque pièce : qui la délivre, dans quel ordre, avec quoi, en combien de temps et à quel coût. Commencez par la légalisation — elle conditionne tout le reste."
             className="mt-16"
           >
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-              <ul className="rounded-panel border border-line bg-white p-6 md:p-7">
-                {entry.required_documents.map((doc, index) => (
-                  <li
-                    key={doc}
-                    className="flex gap-3 border-b border-line py-3 first:pt-0 last:border-b-0 last:pb-0"
-                  >
-                    <span className="mt-0.5 text-[11px] tabular-nums text-ink-faint">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="text-[12.5px] leading-[1.55] text-ink-soft">
-                      {doc}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <DocumentChecklist documents={entry.required_documents} />
 
-              <aside className="h-fit rounded-panel bg-surface-sunk/60 p-6">
+              <aside className="h-fit rounded-panel bg-surface-sunk/60 p-6 lg:sticky lg:top-24">
                 <FileText className="h-4 w-4 text-ink-muted" strokeWidth={1.7} />
                 <p className="mt-3 text-[13px] font-semibold">Traductions</p>
                 <p className="mt-2 text-[12px] leading-[1.65] text-ink-muted">
@@ -495,17 +488,18 @@ export default async function DestinationPage({
                   Ce programme est-il à votre portée&nbsp;?
                 </h2>
                 <p className="mt-2.5 max-w-[56ch] text-[12.5px] leading-[1.65] text-ink-muted">
-                  L&apos;évaluation gratuite confronte votre moyenne réelle au
-                  seuil de {formatGpa(entry.min_gpa_20)} exigé ici, et vous
-                  situe face aux 49 autres programmes du catalogue.
+                  Verdict critère par critère sur ce programme précis — moyenne,
+                  niveau, filière, budget, langue — et ce qu&apos;il faut
+                  corriger si un critère bloque. Les autres options compatibles
+                  suivent.
                 </p>
               </div>
               <Link
-                href={`/evaluation?field=${encodeURIComponent(entry.eligible_fields[0] ?? "")}`}
+                href={`/evaluation?program=${entry.slug}`}
                 className="inline-flex h-12 shrink-0 items-center gap-2 rounded-btn bg-ink px-6 text-[13px] font-medium text-white transition-colors hover:bg-ink-soft"
               >
                 <Wallet className="h-4 w-4" strokeWidth={1.8} />
-                Évaluer mon admissibilité
+                Évaluer mon admissibilité pour ce programme
               </Link>
             </div>
           </div>

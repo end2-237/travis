@@ -6,7 +6,15 @@ import {
   View,
   renderToBuffer,
 } from "@react-pdf/renderer";
-import { buildTimeline, DOCUMENT_CHECKLIST } from "@/lib/pdf/checklist";
+import { buildTimeline } from "@/lib/pdf/checklist";
+import { catalogEntry } from "@/data/catalog";
+import {
+  SERVICE_LABELS,
+  servicesOfKind,
+  type ServiceKind,
+  type ServiceProvider,
+} from "@/data/services";
+import type { RequiredDocument } from "@/data/procedure";
 import { pdfText } from "@/lib/pdf/text";
 import { formatGpa, formatXaf } from "@/lib/utils";
 import type { MatchSnapshot, StudentProfile } from "@/types/database";
@@ -42,7 +50,7 @@ const s = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Helvetica-Bold",
     letterSpacing: -0.6,
-    marginBottom: 4,
+    marginBottom: 7,
   },
   lede: { fontSize: 9.5, color: MUTED, marginBottom: 18, maxWidth: 420 },
   sectionTitle: {
@@ -84,6 +92,52 @@ const s = StyleSheet.create({
   },
   matchTitle: { fontSize: 11, fontFamily: "Helvetica-Bold", letterSpacing: -0.2 },
   matchMeta: { fontSize: 8, color: MUTED, marginTop: 2 },
+  serviceCard: {
+    borderWidth: 1,
+    borderColor: LINE,
+    borderRadius: 8,
+    padding: 11,
+    marginBottom: 7,
+  },
+  serviceName: { fontSize: 10, fontFamily: "Helvetica-Bold", letterSpacing: -0.2 },
+  badge: {
+    fontSize: 7,
+    fontFamily: "Helvetica-Bold",
+    color: "#ffffff",
+    backgroundColor: "#1f6feb",
+    borderRadius: 7,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+  },
+  badgeMuted: {
+    fontSize: 7,
+    color: MUTED,
+    backgroundColor: CANVAS,
+    borderRadius: 7,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+  },
+  step: { flexDirection: "row", marginTop: 4 },
+  stepNum: { width: 12, fontSize: 8, color: FAINT, fontFamily: "Helvetica-Bold" },
+  stepText: { fontSize: 8.5, lineHeight: 1.45 },
+  stepDetail: { fontSize: 7.5, color: MUTED, lineHeight: 1.45, marginTop: 2 },
+  metaValue: { fontSize: 8.5, marginTop: 2, lineHeight: 1.35 },
+  warn: {
+    fontSize: 7.5,
+    color: "#7a5b00",
+    backgroundColor: "#fdf6e0",
+    borderRadius: 6,
+    padding: 7,
+    marginTop: 7,
+    lineHeight: 1.45,
+  },
+  docTitle: {
+    fontSize: 10.5,
+    fontFamily: "Helvetica-Bold",
+    letterSpacing: -0.2,
+    marginTop: 14,
+    marginBottom: 2,
+  },
   link: {
     fontSize: 8,
     color: "#1f6feb",
@@ -162,6 +216,143 @@ function Shell({
   );
 }
 
+/** Regroupe les pièces exigées par les programmes retenus, par type de service. */
+interface DocumentGroup {
+  kind: ServiceKind;
+  documents: string[];
+  providers: ServiceProvider[];
+}
+
+function buildDocumentGroups(
+  matches: MatchSnapshot["matches"],
+): DocumentGroup[] {
+  const byKind = new Map<ServiceKind, Set<string>>();
+
+  // Les pièces se recoupent largement d'un programme à l'autre : on les
+  // fusionne pour ne pas répéter dix fois la même démarche.
+  for (const match of matches.slice(0, 8)) {
+    const entry = match.slug ? catalogEntry(match.slug) : null;
+    if (!entry) continue;
+
+    for (const doc of entry.required_documents as RequiredDocument[]) {
+      const set = byKind.get(doc.service) ?? new Set<string>();
+      set.add(doc.label);
+      byKind.set(doc.service, set);
+    }
+  }
+
+  // Ordre de réalisation, pas ordre alphabétique : c'est l'enchaînement qui
+  // fait rater les échéances quand on l'ignore.
+  const ORDER: ServiceKind[] = [
+    "etat-civil",
+    "passeport",
+    "legalisation",
+    "traduction",
+    "apostille",
+    "langue",
+    "medical",
+    "photo",
+    "financier",
+    "visa",
+  ];
+
+  return ORDER.filter((kind) => byKind.has(kind)).map((kind) => ({
+    kind,
+    documents: [...(byKind.get(kind) ?? [])],
+    providers: servicesOfKind(kind),
+  }));
+}
+
+/** Fiche d'un organisme ou partenaire, telle qu'imprimée dans le rapport. */
+function ServiceBlock({ provider }: { provider: ServiceProvider }) {
+  const isPartner = provider.nature === "partner";
+  const pending = provider.status === "a_confirmer";
+
+  return (
+    <View style={s.serviceCard} wrap={false}>
+      <View style={s.row}>
+        <Text style={[s.serviceName, { flex: 1, paddingRight: 8 }]}>
+          {pdfText(provider.name)}
+        </Text>
+        <Text style={isPartner ? s.badge : s.badgeMuted}>
+          {isPartner ? "Partenaire" : "Demarche officielle"}
+        </Text>
+      </View>
+
+      <Text style={{ fontSize: 8, color: MUTED, marginTop: 3 }}>
+        {pdfText(provider.summary)}
+      </Text>
+
+      {provider.steps.map((step, index) => (
+        <View key={step.label} style={s.step}>
+          <Text style={s.stepNum}>{index + 1}.</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={s.stepText}>{pdfText(step.label)}</Text>
+            {step.detail ? (
+              <Text style={s.stepDetail}>{pdfText(step.detail)}</Text>
+            ) : null}
+          </View>
+        </View>
+      ))}
+
+      {provider.bring.length > 0 ? (
+        <View style={{ marginTop: 7 }}>
+          <Text style={s.label}>A apporter</Text>
+          {provider.bring.map((item) => (
+            <Text key={item} style={{ fontSize: 8, color: MUTED, marginTop: 1 }}>
+              — {pdfText(item)}
+            </Text>
+          ))}
+        </View>
+      ) : null}
+
+      <View style={[s.row, { marginTop: 9 }]}>
+        <View style={{ flex: 1, paddingRight: 10 }}>
+          <Text style={s.label}>Delai</Text>
+          <Text style={s.metaValue}>{pdfText(provider.leadTime)}</Text>
+        </View>
+        <View style={{ flex: 1, paddingRight: 10 }}>
+          <Text style={s.label}>
+            {isPartner ? "Frais de service" : "Frais officiels"}
+          </Text>
+          <Text style={s.metaValue}>
+            {pdfText(
+              (isPartner ? provider.serviceFee : provider.officialFee) ??
+                "A confirmer",
+            )}
+          </Text>
+        </View>
+        <View style={{ flex: 1.3 }}>
+          <Text style={s.label}>Ou</Text>
+          <Text style={s.metaValue}>
+            {pdfText(
+              provider.address ??
+                (provider.coverage.join(", ") || "Voir ci-dessus"),
+            )}
+          </Text>
+        </View>
+      </View>
+
+      {provider.phone ? (
+        <Text style={{ fontSize: 8, color: MUTED, marginTop: 4 }}>
+          Contact : {pdfText(provider.phone)}
+        </Text>
+      ) : null}
+
+      {provider.warning ? (
+        <Text style={s.warn}>{pdfText(provider.warning)}</Text>
+      ) : null}
+
+      {pending ? (
+        <Text style={{ fontSize: 7.5, color: FAINT, marginTop: 6, lineHeight: 1.45 }}>
+          Coordonnees et tarifs en cours de referencement. La demarche
+          officielle ci-dessus reste realisable par vous-meme.
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
 export function ReportDocument({
   profile,
   snapshot,
@@ -179,6 +370,7 @@ export function ReportDocument({
     "fr-FR",
     { day: "2-digit", month: "long", year: "numeric" },
   );
+  const documentGroups = buildDocumentGroups(matches);
 
   return (
     <Document
@@ -340,40 +532,89 @@ export function ReportDocument({
         ))}
       </Shell>
 
-      {/* Page 5 — Checklist documentaire */}
-      <Shell page="Checklist documentaire" profileName={name}>
-        <Text style={s.pageTitle}>Pièces à constituer</Text>
+      {/* Pages 5+ — Constitution du dossier, pièce par pièce */}
+      <Shell page="Constitution du dossier" profileName={name}>
+        <Text style={s.pageTitle}>Constituer votre dossier</Text>
         <Text style={s.lede}>
-          Légalisation, traduction assermentée et référents certifiés. Les
-          délais indiqués sont ceux observés en Afrique centrale.
+          Chaque pièce exigée, l&apos;organisme qui la délivre, la procédure
+          exacte, ce qu&apos;il faut apporter, le délai et le coût. L&apos;ordre
+          compte : la légalisation conditionne la traduction, qui conditionne
+          l&apos;apostille.
         </Text>
 
-        <View style={s.thRow}>
-          <Text style={[s.th, { flex: 1.1 }]}>Document</Text>
-          <Text style={[s.th, { flex: 1.9 }]}>Détail & délai</Text>
-          <Text style={[s.th, { flex: 1.2 }]}>Où l&apos;obtenir</Text>
+        <View style={s.cardSoft}>
+          <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 9.5 }}>
+            Ne prenez pas les étapes dans le désordre
+          </Text>
+          <Text style={{ fontSize: 8.5, color: MUTED, marginTop: 3 }}>
+            Faire traduire une pièce avant de l&apos;avoir fait légaliser oblige
+            à tout refaire : le traducteur assermenté traduit aussi les cachets.
+            C&apos;est l&apos;erreur qui coûte le plus de sessions.
+          </Text>
         </View>
 
-        {DOCUMENT_CHECKLIST.map((item) => (
-          <View key={item.document} style={s.tdRow} wrap={false}>
-            <Text style={[s.td, { flex: 1.1, fontFamily: "Helvetica-Bold" }]}>
-              {item.document}
-            </Text>
-            <Text style={[s.td, { flex: 1.9, color: MUTED }]}>{item.detail}</Text>
-            <Text style={[s.td, { flex: 1.2, color: MUTED }]}>
-              {item.referent}
-            </Text>
+        {documentGroups.map((group) => (
+          <View key={group.kind} wrap={false}>
+            <Text style={s.docTitle}>{SERVICE_LABELS[group.kind]}</Text>
+            {group.documents.map((doc) => (
+              <Text key={doc} style={{ fontSize: 8.5, color: MUTED }}>
+                — {pdfText(doc)}
+              </Text>
+            ))}
+            {group.providers.map((provider) => (
+              <ServiceBlock key={provider.id} provider={provider} />
+            ))}
           </View>
         ))}
-
-        <Text style={s.sectionTitle}>Avertissement</Text>
-        <Text style={{ fontSize: 8.5, color: MUTED }}>
-          Les montants, minima et dates de clôture reflètent les sessions
-          publiées au moment de la génération de ce rapport. Vérifiez toujours
-          l&apos;appel à candidatures officiel avant tout dépôt : les
-          établissements peuvent modifier leurs critères sans préavis.
-        </Text>
       </Shell>
+
+      {/* Avertissement final */}
+      <Shell page="Avertissement" profileName={name}>
+        <Text style={s.pageTitle}>Ce que ce rapport engage</Text>
+
+        <Text style={s.sectionTitle}>Sur les programmes</Text>
+        <Text style={{ fontSize: 8.5, color: MUTED, lineHeight: 1.55 }}>
+          Les montants, minima et dates de cloture refletent les sessions
+          publiees au moment de la generation de ce rapport. Verifiez toujours
+          l&apos;appel a candidatures officiel avant tout depot : les
+          etablissements modifient leurs criteres sans preavis. Travis
+          n&apos;est ni une universite, ni un consulat, ni un agent officiel
+          d&apos;un programme de bourse : aucune admission, aucune bourse et
+          aucun visa ne sont garantis.
+        </Text>
+
+        <Text style={s.sectionTitle}>Sur les démarches administratives</Text>
+        <Text style={{ fontSize: 8.5, color: MUTED, lineHeight: 1.55 }}>
+          Les procédures décrites sont celles publiées par les administrations
+          compétentes. Les tarifs officiels et les délais varient d&apos;un
+          guichet à l&apos;autre et dans le temps : renseignez-vous sur place
+          avant de vous déplacer avec de l&apos;argent.
+        </Text>
+
+        <Text style={s.sectionTitle}>Sur les partenaires</Text>
+        <Text style={{ fontSize: 8.5, color: MUTED, lineHeight: 1.55 }}>
+          Les partenaires référencés interviennent sous leur propre
+          responsabilité. Leurs frais de service s&apos;ajoutent aux frais
+          officiels et ne sont jamais obligatoires : chaque démarche décrite
+          dans ce rapport peut être accomplie par vous-même. Ne réglez aucune
+          somme sans reçu.
+        </Text>
+
+        <Text style={s.sectionTitle}>Ce qui reste à votre charge</Text>
+        <Bullet>
+          Vérifier l&apos;exactitude des informations que vous avez déclarées :
+          une moyenne surévaluée produit un diagnostic inexploitable.
+        </Bullet>
+        <Bullet>
+          Confirmer chaque date auprès de la source officielle avant de vous
+          engager financièrement.
+        </Bullet>
+        <Bullet>
+          Conserver l&apos;original de chaque pièce : ne confiez jamais un
+          document unique sans reçu nominatif.
+        </Bullet>
+      </Shell>
+
     </Document>
   );
 }

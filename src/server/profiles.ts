@@ -13,6 +13,8 @@ export async function persistProfile(input: EvaluationInput): Promise<string> {
     field_of_study: input.field_of_study,
     max_budget_xaf: input.max_budget_xaf,
     target_countries: input.target_countries,
+    language_level: input.language_level,
+    focus_program: input.focus_program ?? null,
   });
 
   if (!isSupabaseConfigured()) {
@@ -32,6 +34,7 @@ export async function persistProfile(input: EvaluationInput): Promise<string> {
       max_budget_xaf: input.max_budget_xaf,
       target_countries: input.target_countries,
       language_level: input.language_level,
+      focus_program: input.focus_program ?? null,
     })
     .select("id")
     .single();
@@ -57,6 +60,7 @@ function toProfile(id: string, input: EvaluationInput): StudentProfile {
     max_budget_xaf: input.max_budget_xaf,
     target_countries: input.target_countries,
     language_level: input.language_level,
+    focus_program: input.focus_program ?? null,
     created_at: new Date().toISOString(),
   };
 }
@@ -85,6 +89,8 @@ export async function loadEvaluation(
     max_budget_xaf:
       profile.max_budget_xaf === null ? null : Number(profile.max_budget_xaf),
     target_countries: profile.target_countries ?? [],
+    language_level: profile.language_level,
+    focus_program: profile.focus_program,
   });
 
   return { profile, snapshot };
