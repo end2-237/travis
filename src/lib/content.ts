@@ -8,8 +8,8 @@ export const NAV_LINKS = [
   { label: "Accueil", href: "/" },
   { label: "À propos", href: "#a-propos" },
   { label: "Bourses", href: "#opportunites" },
-  { label: "Destinations", href: "#destinations" },
-  { label: "Contact", href: "#contact" },
+  { label: "Destinations", href: "/destinations" },
+  { label: "Partenaires", href: "/partenaires" },
 ] as const;
 
 export const IMG = {
@@ -211,7 +211,8 @@ export const VIDEO_QUOTE = {
 export const FOOTER_LINKS = [
   { label: "Accueil", href: "/" },
   { label: "À propos", href: "#a-propos" },
-  { label: "Services", href: "#destinations" },
+  { label: "Partenaires", href: "/partenaires" },
+  { label: "Devenir partenaire", href: "/devenir-partenaire" },
   { label: "Confidentialité", href: "/confidentialite" },
   { label: "Conditions", href: "/conditions" },
 ] as const;

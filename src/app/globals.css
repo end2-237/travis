@@ -171,6 +171,195 @@
 }
 
 /* ------------------------------------------------------------------
+   Matière — grain, dégradés vivants, ressorts
+
+   Tout ce bloc est du CSS pur : il ne coûte pas un octet de JavaScript et
+   s'exécute sur le compositeur, hors du thread principal. C'est ce qui donne
+   la texture d'un site soigné sans le prix d'une pile WebGL.
+------------------------------------------------------------------- */
+
+/*
+ * Courbe à ressort.
+ * `cubic-bezier` ne sait pas dépasser sa cible puis revenir ; `linear()`
+ * échantillonne une vraie courbe amortie, et donne ce léger rebond qui fait
+ * qu'un élément semble avoir une masse.
+ */
+@theme {
+  --ease-spring: linear(
+    0, 0.009, 0.035, 0.078, 0.137, 0.212, 0.301, 0.402, 0.513, 0.63, 0.749,
+    0.865, 0.973, 1.068, 1.146, 1.204, 1.24, 1.254, 1.248, 1.227, 1.196,
+    1.16, 1.124, 1.09, 1.062, 1.04, 1.023, 1.011, 1.004, 1
+  );
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/*
+ * Grain argentique.
+ * Une turbulence SVG en fond, posée en overlay et en `pointer-events: none`.
+ * Elle casse l'aplat numérique des grands fonds unis — l'œil lit une matière
+ * plutôt qu'une surface morte. Coût : une seule image inline, mise en cache.
+ */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+.grain-soft::after {
+  opacity: 0.16;
+}
+
+/*
+ * Dégradé vivant.
+ * Trois halos radiaux qui dérivent lentement. `@property` rend les
+ * pourcentages interpolables, ce que des variables CSS ordinaires ne
+ * permettent pas — sans lui, l'animation sauterait d'une étape à l'autre.
+ */
+@property --mesh-x1 {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 20%;
+}
+@property --mesh-y1 {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 25%;
+}
+@property --mesh-x2 {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 80%;
+}
+@property --mesh-y2 {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 70%;
+}
+
+@keyframes mesh-drift {
+  0% {
+    --mesh-x1: 18%;
+    --mesh-y1: 22%;
+    --mesh-x2: 82%;
+    --mesh-y2: 72%;
+  }
+  50% {
+    --mesh-x1: 34%;
+    --mesh-y1: 48%;
+    --mesh-x2: 64%;
+    --mesh-y2: 44%;
+  }
+  100% {
+    --mesh-x1: 18%;
+    --mesh-y1: 22%;
+    --mesh-x2: 82%;
+    --mesh-y2: 72%;
+  }
+}
+
+.mesh {
+  background-color: var(--color-ink);
+  background-image:
+    radial-gradient(
+      42rem 30rem at var(--mesh-x1) var(--mesh-y1),
+      color-mix(in oklab, var(--color-lime) 30%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      38rem 28rem at var(--mesh-x2) var(--mesh-y2),
+      color-mix(in oklab, var(--color-electric) 34%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      30rem 24rem at 55% 8%,
+      color-mix(in oklab, var(--color-gold) 16%, transparent),
+      transparent 72%
+    );
+  animation: mesh-drift 26s ease-in-out infinite;
+}
+
+/* Filet lumineux sur le bord supérieur d'une carte sombre. */
+.hairline-top {
+  position: relative;
+}
+
+.hairline-top::before {
+  content: "";
+  position: absolute;
+  inset-inline: 12%;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgb(255 255 255 / 0.28),
+    transparent
+  );
+}
+
+/*
+ * Bandeau défilant.
+ * Le contenu est dupliqué en HTML et translaté de exactement -50 % : la
+ * boucle est alors invisible, sans calcul de largeur en JavaScript.
+ */
+@keyframes marquee-slide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-slide var(--marquee-duration, 38s) linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/*
+ * Barre de progression pilotée par le défilement.
+ * `animation-timeline: scroll()` s'exécute hors du thread principal : aucun
+ * écouteur, aucun recalcul par frame. Là où le navigateur ne la connaît pas,
+ * la barre reste simplement à zéro — une décoration absente ne manque pas.
+ */
+@supports (animation-timeline: scroll()) {
+  @keyframes progress-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .scroll-progress {
+    transform-origin: 0 50%;
+    animation: progress-grow linear;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* Élévation au survol, avec la masse du ressort. */
+.lift {
+  transition:
+    transform 520ms var(--ease-spring),
+    box-shadow 380ms var(--ease-out-soft);
+}
+
+.lift:hover {
+  transform: translate3d(0, -6px, 0);
+}
+
+/* ------------------------------------------------------------------
    Mouvement
 ------------------------------------------------------------------- */
 
@@ -274,6 +463,16 @@
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+
+  .mesh,
+  .marquee-track,
+  .scroll-progress {
+    animation: none !important;
+  }
+
+  .lift:hover {
+    transform: none;
   }
 
   *,

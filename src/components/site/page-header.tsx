@@ -17,7 +17,13 @@ export function PageHeader() {
         </span>
 
         <Link
-          href="/#destinations"
+          href="/partenaires"
+          className="mr-1.5 hidden h-10 items-center rounded-full px-3.5 text-[13px] text-ink-muted transition-colors hover:text-ink sm:flex"
+        >
+          Partenaires
+        </Link>
+        <Link
+          href="/destinations"
           className="flex h-10 items-center rounded-full border border-line px-4 text-[13px] font-medium text-ink transition-colors hover:bg-surface-soft"
         >
           Destinations

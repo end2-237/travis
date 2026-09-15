@@ -124,6 +124,35 @@ vise un Master tout en restant éligible aux programmes de Licence. Le score de
 compatibilité combine marge de moyenne (45 pts), budget (30), pays visé (15) et
 financement intégral (10).
 
+### Pages partenaires
+
+- `/partenaires` — vitrine pour les candidats : l'annuaire des services, filtrable
+  par type et par nature (voie officielle ou partenaire), dans l'ordre de
+  réalisation du dossier.
+- `/devenir-partenaire` — acquisition : ce que Travis apporte, ce qu'il attend,
+  le modèle de commission, et le formulaire de candidature.
+
+Une candidature n'est **jamais publiée automatiquement** : elle est enregistrée
+dans `partner_applications` pour examen. Un référencement libre exposerait des
+coordonnées non vérifiées à des candidats qui s'y déplaceraient.
+
+### Matière visuelle
+
+Le rendu « hi-fi » est obtenu **sans WebGL**, et c'est un choix mesuré : ajouter
+Three.js coûterait 281 ko gzip sur une page d'accueil qui en pèse 502 au total,
+sur un public souvent en 3G et sur forfait. Tout tient en CSS, donc sur le
+compositeur, hors du thread principal :
+
+| Effet | Mécanique | Coût JS |
+| --- | --- | --- |
+| Grain argentique | `feTurbulence` SVG inline en overlay | 0 |
+| Dégradé vivant | 3 halos radiaux animés via `@property` | 0 |
+| Ressort | `linear()` échantillonnant une courbe amortie | 0 |
+| Bandeau défilant | contenu dupliqué, translation -50 % | 0 |
+| Séquence numérotée | `position: sticky` | 0 |
+
+`prefers-reduced-motion` neutralise l'ensemble.
+
 ### Services et partenaires
 
 `src/data/services.ts` décrit chaque service nécessaire au dossier

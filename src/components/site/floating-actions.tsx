@@ -1,9 +1,32 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUp } from "lucide-react";
+import {
+  ArrowUp,
+  Building2,
+  FileCheck2,
+  FileDown,
+  ListChecks,
+} from "lucide-react";
 import { usePrefersReducedMotion } from "@/components/motion/use-reduced-motion";
 import { cn } from "@/lib/utils";
+
+/**
+ * Icônes disponibles, désignées par un nom.
+ *
+ * Un composant est une fonction, et une fonction ne franchit pas la frontière
+ * entre composant serveur et composant client : la passer en prop fait
+ * échouer le rendu à l'exécution. Le nom traverse sans problème, la
+ * résolution a lieu ici.
+ */
+const ICONS = {
+  demarches: ListChecks,
+  rapport: FileDown,
+  annuaire: Building2,
+  candidature: FileCheck2,
+} as const;
+
+export type FloatingIcon = keyof typeof ICONS;
 
 export interface FloatingAction {
   /** Identifiant de la section visée, sans le dièse. */
@@ -11,7 +34,7 @@ export interface FloatingAction {
   label: string;
   /** Libellé abrégé sur petit écran, où la place manque. */
   shortLabel?: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  icon: FloatingIcon;
   /** Un seul raccourci porte l'accent : celui qui mène à l'action payante. */
   primary?: boolean;
 }
@@ -125,6 +148,7 @@ export function FloatingActions({ actions }: { actions: FloatingAction[] }) {
         {/* Raccourcis de section */}
         {actions.map((action) => {
           const hidden = reached.has(action.target);
+          const Icon = ICONS[action.icon];
           return (
             <a
               key={action.target}
@@ -141,7 +165,7 @@ export function FloatingActions({ actions }: { actions: FloatingAction[] }) {
                   : "translate-y-0 opacity-100",
               )}
             >
-              <action.icon className="h-4 w-4 shrink-0" strokeWidth={1.9} />
+              <Icon className="h-4 w-4 shrink-0" strokeWidth={1.9} />
               <span className="sm:hidden">
                 {action.shortLabel ?? action.label}
               </span>

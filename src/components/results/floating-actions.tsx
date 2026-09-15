@@ -1,6 +1,5 @@
 "use client";
 
-import { FileDown, ListChecks } from "lucide-react";
 import {
   FloatingActions,
   type FloatingAction,
@@ -25,7 +24,7 @@ export function ResultsFloatingActions({
             target: "dossier",
             label: "Les démarches",
             shortLabel: "Démarches",
-            icon: ListChecks,
+            icon: "demarches",
           } satisfies FloatingAction,
         ]
       : []),
@@ -33,7 +32,7 @@ export function ResultsFloatingActions({
       target: "rapport",
       label: "Ma feuille de route",
       shortLabel: "Mon PDF",
-      icon: FileDown,
+      icon: "rapport",
       primary: true,
     },
   ];
