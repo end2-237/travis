@@ -150,8 +150,47 @@ compositeur, hors du thread principal :
 | Ressort | `linear()` échantillonnant une courbe amortie | 0 |
 | Bandeau défilant | contenu dupliqué, translation -50 % | 0 |
 | Séquence numérotée | `position: sticky` | 0 |
+| Fil de progression | `animation-timeline: scroll(root)` | 0 |
+| Phrase qui s'allume mot à mot | `animation-timeline: view()` + `--w` par mot | 0 |
+| Titre dont les mots se relèvent | masque `overflow: hidden` + `translateY` décalé | 0 |
+| Balayage de lumière | `::after` translaté au survol | 0 |
 
-`prefers-reduced-motion` neutralise l'ensemble.
+Le défilement sert de chronologie au navigateur, qui échantillonne sur le
+compositeur : aucun écouteur de `scroll`, aucun calcul par frame. Mesuré à
+390 px après cette passe : **513 ko au total, dont 275 ko de JavaScript** —
+soit exactement le même JavaScript qu'avant, tout le mouvement ajouté étant
+du CSS et des composants serveur.
+
+Deux garde-fous tiennent la lisibilité :
+
+- chaque effet non pris en charge est enfermé dans un `@supports`, et l'état
+  par défaut est l'état **lisible** — jamais l'état masqué ;
+- le plancher d'opacité des mots non encore « lus » est à 0,24 et non à zéro :
+  quelqu'un qui arrive par une ancre au milieu de la page peut lire la phrase.
+
+`prefers-reduced-motion` neutralise l'ensemble, et `@media print` aussi.
+
+### Visuels
+
+Trois tables, une règle commune : **aucune image n'est posée sans avoir été
+ouverte et regardée.**
+
+| Table | Ce qu'elle associe |
+| --- | --- |
+| `src/data/images.ts` | un pays → sa photo (pas de rotation arbitraire : le Colisée sur une fiche marocaine décrédibilise le catalogue) |
+| `src/data/service-images.ts` | un type de démarche → sa photo d'en-tête |
+| `src/lib/content.ts` (`IMG`) | les visuels de l'accueil, chacun avec son texte alternatif |
+
+Deux conséquences pratiques :
+
+- **Le texte alternatif décrit la photo, jamais un lieu.** « Un passeport posé
+  sur une carte du monde », pas « le bureau des passeports de Douala ». Une
+  photo d'illustration qui se fait passer pour une façade envoie un candidat
+  chercher un bâtiment qui n'existe pas.
+- **Deviner un identifiant Unsplash ne suffit pas.** Sur 60 identifiants
+  essayés pendant le référencement des démarches, la plupart résolvaient bien
+  — mais vers deux pandas, un skateur et une enceinte connectée. Chaque
+  identifiant retenu a été téléchargé et affiché avant d'entrer dans le code.
 
 ### Services et partenaires
 
@@ -239,8 +278,10 @@ librairie. Palette validée pour la vision des couleurs — `#2a78d6` / `#eb6834
 ### Mouvement
 
 Pas de librairie d'animation : `src/components/motion/` fournit `Reveal`
-(IntersectionObserver), `Parallax` (rAF, actif seulement à l'écran) et
-`CountUp`. L'état masqué des blocs révélés est porté par une règle CSS
+(IntersectionObserver), `Parallax` (rAF, actif seulement à l'écran),
+`CountUp`, et `ScrollWords` / `WordRise` — deux composants **serveur** qui ne
+font que découper une phrase en mots numérotés, la feuille de style faisant
+le reste. L'état masqué des blocs révélés est porté par une règle CSS
 conditionnée à `data-js="on"` — sans JavaScript, à l'impression, ou pour un
 robot d'indexation, **le contenu reste visible**. Une page qui existe pour
 informer ne doit pas pouvoir disparaître à cause d'une animation.

@@ -79,7 +79,7 @@ export function Destinations() {
           <Reveal key={card.slug} delay={Math.min(index, 3) * 70}>
             <Link
               href={`/destinations/${card.slug}`}
-              className="group flex h-full flex-col rounded-panel bg-white p-2.5 shadow-card transition-transform duration-400 hover:-translate-y-1.5"
+              className="lift group flex h-full flex-col rounded-panel bg-white p-2.5 shadow-card hover:shadow-float"
             >
               <Photo
                 src={card.image}
@@ -151,7 +151,7 @@ export function Destinations() {
         <div className="mt-8 flex justify-center">
           <Link
             href="/destinations"
-            className="inline-flex h-11 items-center gap-2 rounded-full border border-line bg-white px-6 text-[13px] font-medium text-ink transition-colors hover:bg-surface-soft"
+            className="lift inline-flex h-11 items-center gap-2 rounded-full border border-line bg-white px-6 text-[13px] font-medium text-ink hover:bg-surface-soft"
           >
             Voir les {CATALOG.length} programmes du catalogue
             <ArrowUpRight className="h-4 w-4" strokeWidth={2} />

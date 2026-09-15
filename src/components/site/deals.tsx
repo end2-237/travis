@@ -33,7 +33,7 @@ export function Deals() {
             alt={deal.title}
             scrim="tile"
             sizes="(max-width: 768px) 100vw, 620px"
-            className="h-[280px] rounded-panel md:h-[310px]"
+            className="lift h-[280px] rounded-panel md:h-[310px]"
           >
             <div className="absolute inset-0 flex flex-col p-5 md:p-6">
               <div className="flex items-start justify-between gap-3">

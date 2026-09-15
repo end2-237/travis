@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -10,6 +11,7 @@ import {
 import { PageViewTracker } from "@/components/analytics/page-view";
 import { Reveal } from "@/components/motion/reveal";
 import { CountUp } from "@/components/motion/count-up";
+import { WordRise } from "@/components/motion/split-words";
 import { ServiceDirectory } from "@/components/partners/service-directory";
 import { StickySteps } from "@/components/partners/sticky-steps";
 import { FloatingActions } from "@/components/site/floating-actions";
@@ -17,8 +19,25 @@ import { Footer } from "@/components/site/footer";
 import { Grain } from "@/components/site/grain";
 import { Marquee } from "@/components/site/marquee";
 import { PageHeader } from "@/components/site/page-header";
+import { Photo } from "@/components/site/photo";
+import { ScrollProgress } from "@/components/site/scroll-progress";
 import { SERVICE_LABELS } from "@/data/services";
 import { getPublicServices } from "@/lib/partners";
+
+/**
+ * Visuels d'ouverture, choisis pour ce qu'ils montrent et non pour l'ambiance :
+ * un guichet pour la promesse de la page, une poignée de main pour l'appel
+ * aux professionnels. Les deux ont été ouverts et regardés avant d'être posés.
+ */
+const COVER = {
+  src: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=1800&q=72",
+  alt: "Personne accueillie à un comptoir de service",
+};
+
+const PARTNER_CALL = {
+  src: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1000&q=72",
+  alt: "Poignée de main entre deux professionnels",
+};
 
 export const metadata: Metadata = {
   title: "Partenaires et démarches",
@@ -77,23 +96,42 @@ export default async function PartnersPage() {
   return (
     <main>
       <PageViewTracker />
+      <ScrollProgress />
       <PageHeader />
 
-      {/* Ouverture */}
+      {/* Ouverture — la photographie porte le fond, le voile de mailles la
+          teinte et le grain la texture. La superposition garde le titre
+          lisible là où la photo est claire. */}
       <header className="px-3 pt-3 md:px-5 md:pt-5">
-        <Grain className="mesh overflow-hidden rounded-stage">
+        <Grain className="relative overflow-hidden rounded-stage bg-ink">
+          <Image
+            src={COVER.src}
+            alt={COVER.alt}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-40"
+          />
+          <div aria-hidden className="mesh-veil absolute inset-0 opacity-75" />
+          <div aria-hidden className="scrim-lead absolute inset-0" />
+
           <div className="relative z-10 px-6 py-16 md:px-12 md:py-24 lg:px-16 lg:py-28">
             <Reveal duration={850}>
               <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-white/25 bg-white/12 px-3 text-[11px] font-medium text-white backdrop-blur-md">
                 <ShieldCheck className="h-3 w-3" strokeWidth={2} />
                 Procédures vérifiées
               </span>
+            </Reveal>
 
-              <h1 className="mt-5 max-w-[16ch] text-[34px] font-semibold leading-[1.04] tracking-[-0.04em] text-white sm:text-[46px] lg:text-[58px]">
-                Le bon guichet, au bon moment
-              </h1>
+            <WordRise
+              as="h1"
+              lines={["Le bon guichet,", "au bon moment"]}
+              delay={140}
+              className="mt-5 max-w-[16ch] text-[34px] font-semibold leading-[1.04] tracking-[-0.04em] text-white sm:text-[46px] lg:text-[58px]"
+            />
 
-              <p className="mt-5 max-w-[58ch] text-[13.5px] leading-[1.65] text-white/70 md:text-[15px]">
+            <Reveal duration={850} delay={480}>
+              <p className="mt-5 max-w-[58ch] text-[13.5px] leading-[1.65] text-white/80 md:text-[15px]">
                 Un dossier d&apos;immigration se perd rarement sur le fond. Il
                 se perd sur une pièce demandée trop tard, une traduction faite
                 avant la légalisation, un guichet qui n&apos;était pas le bon.
@@ -108,7 +146,7 @@ export default async function PartnersPage() {
                     <dt className="text-[34px] font-semibold leading-none tracking-[-0.045em] text-white md:text-[42px]">
                       <CountUp value={stat.value} />
                     </dt>
-                    <dd className="mt-2.5 max-w-[20ch] text-[11.5px] leading-[1.45] text-white/55">
+                    <dd className="mt-2.5 max-w-[20ch] text-[11.5px] leading-[1.45] text-white/65">
                       {stat.label}
                     </dd>
                   </div>
@@ -168,8 +206,8 @@ export default async function PartnersPage() {
             soft
             className="overflow-hidden rounded-stage border border-line bg-white"
           >
-            <div className="relative z-10 grid gap-8 p-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:p-12">
-              <div>
+            <div className="relative z-10 grid gap-0 md:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
+              <div className="p-8 md:p-12">
                 <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-surface-sunk px-3 text-[11px] font-medium text-ink-muted">
                   <Handshake className="h-3 w-3" strokeWidth={2} />
                   Vous êtes un professionnel
@@ -182,15 +220,22 @@ export default async function PartnersPage() {
                   destination et connaissent leur échéance. Ils cherchent un
                   prestataire, pas de l&apos;information.
                 </p>
+
+                <Link
+                  href="/devenir-partenaire"
+                  className="lift mt-7 inline-flex h-12 shrink-0 items-center gap-2 rounded-btn bg-ink px-6 text-[13px] font-medium text-white hover:bg-ink-soft"
+                >
+                  Devenir partenaire
+                  <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
+                </Link>
               </div>
 
-              <Link
-                href="/devenir-partenaire"
-                className="lift inline-flex h-12 shrink-0 items-center gap-2 rounded-btn bg-ink px-6 text-[13px] font-medium text-white hover:bg-ink-soft"
-              >
-                Devenir partenaire
-                <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
-              </Link>
+              <Photo
+                src={PARTNER_CALL.src}
+                alt={PARTNER_CALL.alt}
+                sizes="(max-width: 768px) 100vw, 340px"
+                className="h-[220px] w-full md:h-full"
+              />
             </div>
           </Grain>
         </Reveal>

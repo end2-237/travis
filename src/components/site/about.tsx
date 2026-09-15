@@ -32,7 +32,7 @@ export function About() {
               return (
                 <div
                   key={feature.title}
-                  className="rounded-card border border-line bg-white p-5"
+                  className="lift rounded-card border border-line bg-white p-5 hover:shadow-card"
                 >
                   <span className="grid h-9 w-9 place-items-center rounded-full bg-surface-sunk text-ink">
                     <Icon className="h-[17px] w-[17px]" strokeWidth={1.7} />
@@ -51,8 +51,8 @@ export function About() {
 
         <Reveal delay={120} from="right" className="relative">
           <Photo
-            src={IMG.about}
-            alt="Résidence universitaire au coucher du soleil"
+            src={IMG.about.src}
+            alt={IMG.about.alt}
             sizes="(max-width: 1024px) 100vw, 620px"
             className="h-[340px] rounded-panel md:h-[420px] lg:h-[468px]"
           />

@@ -154,6 +154,20 @@
     );
   }
 
+  /* Voile de lecture d'une ouverture de page : dense du côté du texte, plus
+     clair là où la photo doit rester visible. Un dégradé de mailles seul ne
+     suffit pas — il est transparent par endroits, et une légende blanche
+     posée sur une zone claire de la photo devient illisible. */
+  .scrim-lead {
+    background-image: linear-gradient(
+        to right,
+        rgb(8 10 9 / 0.88) 0%,
+        rgb(8 10 9 / 0.64) 52%,
+        rgb(8 10 9 / 0.3) 100%
+      ),
+      linear-gradient(to top, rgb(8 10 9 / 0.5) 0%, rgb(8 10 9 / 0.08) 62%);
+  }
+
   /* Aplat de repli derrière chaque photo (si le CDN est injoignable) */
   .photo-fallback {
     background-image: linear-gradient(135deg, #d9ded6 0%, #b9c3b8 50%, #97a596 100%);
@@ -263,6 +277,15 @@
 
 .mesh {
   background-color: var(--color-ink);
+}
+
+/*
+ * `.mesh` peint son propre fond d'encre ; `.mesh-veil` porte les mêmes halos
+ * sans fond, pour venir se poser par-dessus une photographie. Le dégradé
+ * n'est écrit qu'une fois.
+ */
+.mesh,
+.mesh-veil {
   background-image:
     radial-gradient(
       42rem 30rem at var(--mesh-x1) var(--mesh-y1),
@@ -331,6 +354,14 @@
  * écouteur, aucun recalcul par frame. Là où le navigateur ne la connaît pas,
  * la barre reste simplement à zéro — une décoration absente ne manque pas.
  */
+/* Repli : sans chronologie de défilement, la barre reste à zéro, donc
+   invisible. Une décoration absente ne manque pas ; une barre pleine et figée
+   en haut de l'écran, elle, se remarque. */
+.scroll-progress {
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
 @supports (animation-timeline: scroll()) {
   @keyframes progress-grow {
     from {
@@ -342,7 +373,6 @@
   }
 
   .scroll-progress {
-    transform-origin: 0 50%;
     animation: progress-grow linear;
     animation-timeline: scroll(root block);
   }
@@ -428,10 +458,166 @@
   background-size: 100% 1px;
 }
 
+
+/* ------------------------------------------------------------------
+   Le défilement comme chronologie
+
+   `animation-timeline: view()` attache la progression d'une animation à la
+   traversée de l'élément dans le viewport. C'est le navigateur qui
+   échantillonne, sur le compositeur : aucun écouteur de défilement, aucun
+   recalcul par frame, pas un octet de JavaScript. Là où la propriété
+   n'existe pas encore, la règle entière est ignorée et le contenu s'affiche
+   tel quel — l'état par défaut est toujours l'état lisible.
+------------------------------------------------------------------- */
+
+/*
+ * Phrase qui s'allume mot à mot.
+ * Chaque mot porte son rang dans `--w` ; le décalage des bornes fait courir
+ * la lumière de gauche à droite à la vitesse du défilement.
+ */
+@supports (animation-timeline: view()) {
+  @keyframes word-lighten {
+    from {
+      opacity: 0.24;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Le plancher reste à 0,24 et non à zéro : quelqu'un qui arrive au milieu
+     de la page par une ancre, ou qui ne fait pas défiler, doit pouvoir lire
+     la phrase. L'effet dit « pas encore lu », il ne cache rien. */
+  .scroll-words > span {
+    opacity: 0.24;
+    animation: word-lighten linear both;
+    animation-timeline: view();
+    /*
+     * Le pas est divisé par le nombre total de mots (`--wn`), et non fixé :
+     * la phrase entière s'allume toujours sur la même portion de course,
+     * qu'elle fasse dix mots ou soixante. Les bornes sont calées pour que la
+     * lecture s'achève quand le bloc arrive au centre de l'écran — c'est là
+     * qu'on le lit.
+     */
+    animation-range: cover calc(20% + var(--w) * (30% / var(--wn))) cover
+      calc(31% + var(--w) * (30% / var(--wn)));
+  }
+}
+
+/*
+ * Mot masqué qui se relève.
+ * Le masque coupe au ras de la ligne de base : on lui rend la place des
+ * jambages, sinon les « g » et les « p » sont rognés.
+ */
+@keyframes word-rise {
+  from {
+    transform: translate3d(0, 110%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.word-rise > span {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
+}
+
+.word-rise > span > span {
+  display: inline-block;
+}
+
+/* Titre au-dessus de la ligne de flottaison : la montée a lieu au chargement. */
+[data-js="on"] .word-rise > span > span {
+  animation: word-rise 880ms var(--ease-out-soft) both;
+  animation-delay: calc(var(--w) * 52ms + var(--rise-delay, 0ms));
+}
+
+/* Titre plus bas dans la page : la montée suit le défilement. */
+@supports (animation-timeline: view()) {
+  [data-js="on"] .word-rise-scroll > span > span {
+    animation: word-rise linear both;
+    animation-delay: 0ms;
+    animation-timeline: view();
+    animation-range: cover calc(14% + var(--w) * 1.4%) cover
+      calc(32% + var(--w) * 1.4%);
+  }
+}
+
+/*
+ * Balayage de lumière au survol d'une surface sombre.
+ * Une seule couche en `::after`, translatée d'un bord à l'autre : c'est la
+ * transformation qui bouge, pas la géométrie, donc rien à recomposer.
+ */
+/*
+ * L'élément porteur doit déjà être positionné — `.sheen` ne fixe pas
+ * `position`. Ces règles vivent hors de toute couche en cascade, et
+ * l'emporteraient donc sur un `absolute` de Tailwind, qui vit dans
+ * `@layer utilities`. Un bouton posé en bas à droite se retrouverait
+ * ramené dans le flux.
+ */
+.sheen {
+  overflow: hidden;
+}
+
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background-image: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgb(255 255 255 / 0.4) 50%,
+    transparent 62%
+  );
+  transform: translate3d(-130%, 0, 0);
+  transition: transform 950ms var(--ease-out-soft);
+}
+
+.sheen:hover::after,
+.sheen:focus-visible::after {
+  transform: translate3d(130%, 0, 0);
+}
+
+/* Repère de défilement sous le hero — l'anneau descend puis se résorbe. */
+@keyframes scroll-hint {
+  0% {
+    transform: translate3d(0, -40%, 0);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 130%, 0);
+    opacity: 0;
+  }
+}
+
+.scroll-hint::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  width: 3px;
+  height: 7px;
+  margin-left: -1.5px;
+  border-radius: 999px;
+  background-color: currentColor;
+  animation: scroll-hint 2.1s var(--ease-out-soft) infinite;
+}
+
 @media print {
-  .travis-reveal {
+  .travis-reveal,
+  .scroll-words > span,
+  .word-rise > span > span {
     opacity: 1 !important;
     transform: none !important;
+    animation: none !important;
   }
 }
 
@@ -466,9 +652,23 @@
   }
 
   .mesh,
+  .mesh-veil,
   .marquee-track,
-  .scroll-progress {
+  .scroll-progress,
+  .scroll-hint::after {
     animation: none !important;
+  }
+
+  /* Le mouvement disparaît, le texte reste : mots allumés, titres en place. */
+  .scroll-words > span,
+  .word-rise > span > span {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .sheen::after {
+    display: none;
   }
 
   .lift:hover {

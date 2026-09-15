@@ -12,23 +12,49 @@ export const NAV_LINKS = [
   { label: "Partenaires", href: "/partenaires" },
 ] as const;
 
+/**
+ * Visuels de l'accueil, avec leur description.
+ *
+ * Le texte alternatif décrit ce que la photo montre réellement — il a été
+ * relu image par image. Annoncer « un belvédère » sur une photo de remise de
+ * diplômes ne trompe pas seulement un lecteur d'écran : c'est le signe qu'on
+ * a posé une image sans la regarder, et cela finit par se voir partout.
+ */
 export const IMG = {
-  hero: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=75",
+  hero: {
+    src: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=75",
+    alt: "Diplômés lançant leur toque au soleil couchant",
+  },
   manifesto: [
-    "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=640&q=80",
-    "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=640&q=80",
-    "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=640&q=80",
+    {
+      src: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=640&q=80",
+      alt: "Étudiants au travail entre les rayonnages d'une bibliothèque",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=640&q=80",
+      alt: "Amphithéâtre pendant un cours",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=640&q=80",
+      alt: "Groupe d'étudiants internationaux en extérieur",
+    },
   ],
   deals: [
     "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1400&q=80",
     "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=1400&q=80",
   ],
-  about:
-    "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=1400&q=80",
-  video:
-    "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=75",
-  banner:
-    "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1920&q=75",
+  about: {
+    src: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1400&q=80",
+    alt: "Chambre en résidence étudiante",
+  },
+  video: {
+    src: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=75",
+    alt: "Groupe d'étudiants en séance de travail autour d'une table",
+  },
+  banner: {
+    src: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1920&q=75",
+    alt: "Vallée de montagne au lever du jour",
+  },
 } as const;
 
 /** Section « Our Achievements » — 4 tuiles, la 3ᵉ mise en avant. */

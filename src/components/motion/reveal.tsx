@@ -41,6 +41,11 @@ const AXIS: Record<Direction, (d: number) => { x: string; y: string }> = {
  *
  * La détection passe par IntersectionObserver : aucun calcul par frame
  * pendant le défilement.
+ *
+ * Attention aux entrées horizontales : `from="left"` part de +22 px, donc
+ * vers la droite. Sur un bloc collé à la gouttière droite, ces 22 px
+ * élargissent le document et rendent la page pannable latéralement tant que
+ * la révélation n'a pas eu lieu. Réservez-les aux blocs qui ont de la marge.
  */
 export function Reveal({
   children,

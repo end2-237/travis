@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { Building2, Handshake, MapPin, Search } from "lucide-react";
 import { ProviderCard } from "@/components/destination/document-checklist";
 import { Reveal } from "@/components/motion/reveal";
+import { Photo } from "@/components/site/photo";
+import { serviceImage, serviceImageAlt } from "@/data/service-images";
 import {
   SERVICE_LABELS,
   type ServiceKind,
@@ -137,28 +139,42 @@ export function ServiceDirectory({ services }: { services: ServiceProvider[] }) 
           {grouped.map(([serviceKind, items]) => (
             <section key={serviceKind}>
               <Reveal>
-                <div className="mb-5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1.5 border-b border-line pb-3.5">
-                  <h3 className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em]">
-                    <span className="grid h-6 w-6 place-items-center rounded-full bg-surface-sunk text-[10px] font-semibold text-ink-muted">
-                      {String(ORDER.indexOf(serviceKind) + 1).padStart(2, "0")}
-                    </span>
-                    {SERVICE_LABELS[serviceKind]}
-                  </h3>
-                  <p className="flex items-center gap-3 text-[11px] text-ink-muted">
-                    {items.some((i) => i.nature === "institution") ? (
-                      <span className="inline-flex items-center gap-1">
-                        <Building2 className="h-3 w-3" strokeWidth={1.8} />
-                        Voie officielle
+                {/* Chaque rubrique s'ouvre sur son propre visuel : dix blocs
+                    de texte à la suite se ressemblent tous, et l'œil perd le
+                    compte des démarches qui lui restent. La photo est
+                    illustrative — le texte alternatif décrit ce qu'elle
+                    montre, jamais un bureau précis. */}
+                <Photo
+                  src={serviceImage(serviceKind, 1200)}
+                  alt={serviceImageAlt(serviceKind)}
+                  scrim="tile"
+                  sizes="(max-width: 1024px) 100vw, 1240px"
+                  className="lift mb-5 h-[124px] rounded-card md:h-[148px]"
+                  imageClassName="object-center"
+                >
+                  <div className="absolute inset-0 z-10 flex flex-wrap items-end justify-between gap-x-4 gap-y-1.5 p-5">
+                    <h3 className="flex items-center gap-2.5 text-[17px] font-semibold tracking-[-0.025em] text-white md:text-[19px]">
+                      <span className="grid h-7 w-7 place-items-center rounded-full border border-white/30 bg-white/14 text-[10px] font-semibold text-white backdrop-blur-md">
+                        {String(ORDER.indexOf(serviceKind) + 1).padStart(2, "0")}
                       </span>
-                    ) : null}
-                    {items.some((i) => i.nature === "partner") ? (
-                      <span className="inline-flex items-center gap-1 text-electric">
-                        <Handshake className="h-3 w-3" strokeWidth={1.8} />
-                        Partenaire
-                      </span>
-                    ) : null}
-                  </p>
-                </div>
+                      {SERVICE_LABELS[serviceKind]}
+                    </h3>
+                    <p className="flex items-center gap-3 text-[11px] text-white/80">
+                      {items.some((i) => i.nature === "institution") ? (
+                        <span className="inline-flex items-center gap-1">
+                          <Building2 className="h-3 w-3" strokeWidth={1.8} />
+                          Voie officielle
+                        </span>
+                      ) : null}
+                      {items.some((i) => i.nature === "partner") ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-electric px-2 py-0.5 text-white">
+                          <Handshake className="h-3 w-3" strokeWidth={1.8} />
+                          Partenaire
+                        </span>
+                      ) : null}
+                    </p>
+                  </div>
+                </Photo>
               </Reveal>
 
               <div className="grid gap-3 lg:grid-cols-2">

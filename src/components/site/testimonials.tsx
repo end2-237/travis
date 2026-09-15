@@ -26,10 +26,14 @@ export function Testimonials() {
       </Reveal>
 
       <div className="mt-9 grid gap-4 lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1fr)]">
-        <Reveal from="left">
+        {/* Entrée verticale, et non « from="left" » : cette carte est collée à
+            la gouttière droite en mobile, et un décalage vers la droite
+            élargit le document de 6 px — la page devient pannable
+            horizontalement tant que la révélation n'a pas eu lieu. */}
+        <Reveal from="up">
         <Photo
-          src={IMG.video}
-          alt="Séance d'accompagnement Travis"
+          src={IMG.video.src}
+          alt={IMG.video.alt}
           scrim="tile"
           sizes="(max-width: 1024px) 100vw, 520px"
           className="min-h-[320px] rounded-panel lg:min-h-full"
@@ -58,7 +62,7 @@ export function Testimonials() {
           {TESTIMONIALS.map((item, index) => (
             <Reveal key={item.name} from="right" delay={index * 90}>
             <figure
-              className="flex flex-col rounded-panel bg-white p-6 shadow-card"
+              className="lift flex flex-col rounded-panel bg-white p-6 shadow-card hover:shadow-float"
             >
               <figcaption className="text-[14px] font-semibold tracking-[-0.02em]">
                 {item.title}
