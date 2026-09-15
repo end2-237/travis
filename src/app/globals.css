@@ -154,6 +154,21 @@
     );
   }
 
+  /* Voile d'un bandeau large et bas. Le dégradé de `scrim-tile` est calé sur
+     une vignette haute : rabattu sur 148 px, sa partie dense couvre presque
+     toute la bande et la photo disparaît. Ici le dégradé court de gauche à
+     droite, là où se trouve le titre, et laisse le sujet lisible. */
+  .scrim-band {
+    background-image: linear-gradient(
+        to right,
+        rgb(6 10 8 / 0.85) 0%,
+        rgb(6 10 8 / 0.55) 42%,
+        rgb(6 10 8 / 0.2) 75%,
+        rgb(6 10 8 / 0.34) 100%
+      ),
+      linear-gradient(to top, rgb(6 10 8 / 0.3) 0%, transparent 55%);
+  }
+
   /* Voile de lecture d'une ouverture de page : dense du côté du texte, plus
      clair là où la photo doit rester visible. Un dégradé de mailles seul ne
      suffit pas — il est transparent par endroits, et une légende blanche

@@ -5,7 +5,11 @@ import { Building2, Handshake, MapPin, Search } from "lucide-react";
 import { ProviderCard } from "@/components/destination/document-checklist";
 import { Reveal } from "@/components/motion/reveal";
 import { Photo } from "@/components/site/photo";
-import { serviceImage, serviceImageAlt } from "@/data/service-images";
+import {
+  serviceImage,
+  serviceImageAlt,
+  serviceImagePosition,
+} from "@/data/service-images";
 import {
   SERVICE_LABELS,
   type ServiceKind,
@@ -147,10 +151,10 @@ export function ServiceDirectory({ services }: { services: ServiceProvider[] }) 
                 <Photo
                   src={serviceImage(serviceKind, 1200)}
                   alt={serviceImageAlt(serviceKind)}
-                  scrim="tile"
+                  scrim="band"
                   sizes="(max-width: 1024px) 100vw, 1240px"
                   className="lift mb-5 h-[124px] rounded-card md:h-[148px]"
-                  imageClassName="object-center"
+                  imageClassName={serviceImagePosition(serviceKind)}
                 >
                   <div className="absolute inset-0 z-10 flex flex-wrap items-end justify-between gap-x-4 gap-y-1.5 p-5">
                     <h3 className="flex items-center gap-2.5 text-[17px] font-semibold tracking-[-0.025em] text-white md:text-[19px]">

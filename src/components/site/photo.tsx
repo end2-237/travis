@@ -8,8 +8,10 @@ type PhotoProps = {
   imageClassName?: string;
   sizes?: string;
   priority?: boolean;
-  /** Voile sombre posé sur la photo — « full » pour les bannières, « tile » pour les vignettes. */
-  scrim?: "none" | "full" | "tile";
+  /** Voile sombre posé sur la photo — « full » pour les bannières pleine
+   *  hauteur, « tile » pour les vignettes, « band » pour les bandeaux bas où
+   *  le texte est aligné à gauche. */
+  scrim?: "none" | "full" | "tile" | "band";
   children?: React.ReactNode;
 };
 
@@ -42,7 +44,9 @@ export function Photo({
           aria-hidden
           className={cn(
             "absolute inset-0",
-            scrim === "full" ? "scrim" : "scrim-tile",
+            scrim === "full" && "scrim",
+            scrim === "tile" && "scrim-tile",
+            scrim === "band" && "scrim-band",
           )}
         />
       ) : null}

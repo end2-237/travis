@@ -15,7 +15,19 @@ import type { ServiceKind } from "@/data/services";
  * du temps un panda ou une paire de lunettes de soleil sur une fiche
  * « Légalisation ».
  */
-const BY_KIND: Record<ServiceKind, { id: string; alt: string }> = {
+interface ServiceVisual {
+  id: string;
+  alt: string;
+  /**
+   * Point d'ancrage du recadrage, quand le sujet n'est pas au centre.
+   * Les bandeaux de l'annuaire font 148 px de haut pour 1 240 de large :
+   * `object-cover` y garde une bande étroite, et un sujet placé en haut de la
+   * photo — un stéthoscope autour d'un cou — en sort purement et simplement.
+   */
+  position?: string;
+}
+
+const BY_KIND: Record<ServiceKind, ServiceVisual> = {
   "etat-civil": {
     id: "photo-1423592707957-3b212afa6733",
     alt: "Registres reliés et carnet ouvert sur un bureau",
@@ -41,8 +53,12 @@ const BY_KIND: Record<ServiceKind, { id: string; alt: string }> = {
     alt: "Pile de livres, pomme et cubes alphabétiques",
   },
   medical: {
-    id: "photo-1576091160550-2173dba999ef",
-    alt: "Stéthoscope posé sur un ordinateur portable",
+    // Le stéthoscope posé sur un clavier disparaissait au recadrage large du
+    // bandeau : il ne restait qu'une main sur un ordinateur. Ici le sujet est
+    // centré et survit à la coupe.
+    id: "photo-1576091160399-112ba8d25d1d",
+    alt: "Professionnel de santé en blouse blanche, stéthoscope au cou",
+    position: "object-top",
   },
   photo: {
     id: "photo-1554048612-b6a482bc67e5",
@@ -66,4 +82,9 @@ export function serviceImage(kind: ServiceKind, width = 640): string {
 /** Texte alternatif décrivant la photo, jamais le lieu. */
 export function serviceImageAlt(kind: ServiceKind): string {
   return BY_KIND[kind].alt;
+}
+
+/** Classe de recadrage, pour les photos dont le sujet n'est pas centré. */
+export function serviceImagePosition(kind: ServiceKind): string {
+  return BY_KIND[kind].position ?? "object-center";
 }
