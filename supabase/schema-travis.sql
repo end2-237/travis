@@ -108,6 +108,15 @@ create table if not exists travis.student_profiles (
     /** Slug du programme visé quand l'évaluation porte sur une seule
         opportunité ; NULL pour une évaluation globale. */
     focus_program    varchar(120),
+    /**
+     * Résultat du matching figé au moment de l'évaluation.
+     *
+     * Sans lui, la page de résultats recalcule à chaque affichage pendant
+     * que le PDF payé reste figé sur son propre instantané : le catalogue
+     * évolue, et l'écran cesse de dire la même chose que le document. Un
+     * candidat qui a payé pour une liste doit retrouver cette liste.
+     */
+    match_snapshot   jsonb,
     created_at       timestamptz  not null default now(),
     constraint student_profiles_gpa_range check (gpa_score >= 0 and gpa_score <= 20)
 );

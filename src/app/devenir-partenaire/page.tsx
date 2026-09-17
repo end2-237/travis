@@ -9,7 +9,6 @@ import {
   Target,
   Users,
 } from "lucide-react";
-import { PageViewTracker } from "@/components/analytics/page-view";
 import { CountUp } from "@/components/motion/count-up";
 import { Reveal } from "@/components/motion/reveal";
 import { ApplicationForm } from "@/components/partners/application-form";
@@ -90,7 +89,6 @@ export default async function BecomePartnerPage() {
 
   return (
     <main>
-      <PageViewTracker />
       <PageHeader />
 
       {/* Ouverture */}

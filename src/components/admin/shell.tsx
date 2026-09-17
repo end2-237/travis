@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/site/logo";
 import {
   BarChart3,
   Handshake,
@@ -35,13 +36,12 @@ export function AdminShell({
         {/* Navigation */}
         <aside className="hidden w-[228px] shrink-0 lg:block">
           <div className="sticky top-5 rounded-panel bg-white p-3 shadow-card">
-            <Link href="/" className="flex items-center gap-2 px-2 py-2">
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-[10px] font-semibold text-white">
-                TR
-              </span>
-              <span className="text-[14px] font-semibold tracking-tight">
-                Travis
-              </span>
+            <Link
+              href="/"
+              className="flex items-center gap-2 px-2 py-2"
+              aria-label="Travis, accueil"
+            >
+              <Logo size="sm" />
               <span className="ml-auto rounded-full bg-surface-sunk px-2 py-0.5 text-[9.5px] font-medium text-ink-muted">
                 Admin
               </span>

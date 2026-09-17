@@ -1,0 +1,8 @@
+Ce répertoire doit exister dans le dépôt : le Dockerfile y copie les fichiers
+statiques, et une étape COPY sur un répertoire absent fait échouer la
+construction de l'image.
+
+robots.txt, sitemap.xml, le manifeste et l'image de partage sont désormais
+générés par Next (src/app/robots.ts, sitemap.ts, manifest.ts,
+opengraph-image.tsx) : ils portent ainsi le domaine réellement déployé,
+qu'un fichier figé ici ne peut pas connaître.

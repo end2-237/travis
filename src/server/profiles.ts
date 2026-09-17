@@ -15,6 +15,7 @@ export async function persistProfile(input: EvaluationInput): Promise<string> {
     target_countries: input.target_countries,
     language_level: input.language_level,
     focus_program: input.focus_program ?? null,
+    visee: input.visee ?? null,
   });
 
   if (!isSupabaseConfigured()) {
@@ -35,6 +36,8 @@ export async function persistProfile(input: EvaluationInput): Promise<string> {
       target_countries: input.target_countries,
       language_level: input.language_level,
       focus_program: input.focus_program ?? null,
+      // Figé ici, servi tel quel à l'écran comme au PDF.
+      match_snapshot: snapshot,
     })
     .select("id")
     .single();
@@ -82,16 +85,24 @@ export async function loadEvaluation(
   if (error || !data) return null;
 
   const profile = data as StudentProfile;
-  const snapshot = await runMatching({
-    gpa_score: Number(profile.gpa_score),
-    current_degree: profile.current_degree,
-    field_of_study: profile.field_of_study,
-    max_budget_xaf:
-      profile.max_budget_xaf === null ? null : Number(profile.max_budget_xaf),
-    target_countries: profile.target_countries ?? [],
-    language_level: profile.language_level,
-    focus_program: profile.focus_program,
-  });
+
+  // L'instantané pris à l'évaluation fait foi : c'est ce que le candidat a
+  // vu, et ce que son rapport contient. Le recalculer à chaque affichage
+  // ferait diverger l'écran du document dès la première évolution du
+  // catalogue. Il n'est recalculé que pour les profils antérieurs à la
+  // colonne, qui n'en ont pas.
+  const snapshot =
+    (profile.match_snapshot as MatchSnapshot | null) ??
+    (await runMatching({
+      gpa_score: Number(profile.gpa_score),
+      current_degree: profile.current_degree,
+      field_of_study: profile.field_of_study,
+      max_budget_xaf:
+        profile.max_budget_xaf === null ? null : Number(profile.max_budget_xaf),
+      target_countries: profile.target_countries ?? [],
+      language_level: profile.language_level,
+      focus_program: profile.focus_program,
+    }));
 
   return { profile, snapshot };
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { FunnelEvent } from "@/components/analytics/page-view";
 import { StepperForm } from "@/components/evaluation/stepper-form";
 import { Footer } from "@/components/site/footer";
 import { PageHeader } from "@/components/site/page-header";
@@ -13,6 +14,9 @@ export const metadata: Metadata = {
 export default function EvaluationPage() {
   return (
     <main>
+      {/* Première marche du tunnel : sans elle, le back-office ne voit que
+          des pages vues et ne peut pas dire où les candidats abandonnent. */}
+      <FunnelEvent kind="evaluation_started" />
       <PageHeader />
 
       <section className="shell pt-12 md:pt-16">

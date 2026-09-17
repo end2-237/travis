@@ -1,19 +1,37 @@
 import { z } from "zod";
+import { normalizePhone } from "@/lib/phone";
 import { COUNTRIES, DEGREES, FIELDS, LANGUAGE_LEVELS } from "@/lib/taxonomy";
 
 /**
- * Numéro WhatsApp d'Afrique centrale/de l'Ouest.
- * Accepte « +237 6XX XX XX XX », « 00237... » ou le format national.
+ * Numéro Mobile Money d'Afrique centrale et de l'Ouest.
+ *
+ * La validation délègue à `normalizePhone`, qui accepte les formats
+ * réellement saisis — « 699001122 », « +237 6 99 00 11 22 », « 00237… » —
+ * et renvoie la forme canonique. Le schéma **transforme** : tout ce qui est
+ * en aval, base de données comme agrégateur de paiement, reçoit un numéro
+ * déjà normalisé, jamais la frappe brute.
+ *
+ * L'expression régulière précédente n'autorisait qu'un seul séparateur :
+ * elle refusait le format que son propre message donnait en exemple, à la
+ * première étape du tunnel.
  */
 const phoneSchema = z
   .string()
   .trim()
   .min(8, "Numéro trop court")
-  .max(20, "Numéro trop long")
-  .regex(
-    /^(?:\+|00)?[1-9]\d{0,3}[\s.-]?\d{6,12}$/,
-    "Numéro WhatsApp invalide (ex. +237 6 99 00 11 22)",
-  );
+  .max(25, "Numéro trop long")
+  .transform((value, ctx) => {
+    const parsed = normalizePhone(value);
+    if (!parsed) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Numéro Mobile Money invalide. Exemples acceptés : 699 00 11 22, +237 6 99 00 11 22, 00237699001122.",
+      });
+      return z.NEVER;
+    }
+    return parsed.e164;
+  })
 
 export const stepIdentitySchema = z.object({
   full_name: z
@@ -53,6 +71,11 @@ export const evaluationSchema = stepIdentitySchema
   .extend(stepAcademicSchema.shape)
   .extend(stepGoalsSchema.shape)
   .extend({
+    /** Type d'offre choisi sur la carte d'accueil. */
+    visee: z
+      .enum(["bourse", "universite"])
+      .optional()
+      .catch(undefined),
     /** Slug du programme quand l'évaluation cible une seule opportunité. */
     focus_program: z
       .string()

@@ -1,21 +1,28 @@
 import "server-only";
 import { MonetbilProvider } from "@/lib/payments/monetbil";
+import { PawaPayProvider } from "@/lib/payments/pawapay";
 import { PayUnitProvider } from "@/lib/payments/payunit";
 import { envOrNull } from "@/lib/site";
 import type {
   CreatePaymentInput,
   CreatePaymentResult,
   PaymentProvider,
+  PaymentStatus,
   WebhookResult,
 } from "@/lib/payments/types";
 
-/** Montant unique de la feuille de route (cf. SRS §3, étape 3). */
+/** Montant unique de la feuille de route. */
 export const REPORT_PRICE_XAF = 500;
 
 /**
- * Fournisseur utilisé tant qu'aucun agrégateur n'est configuré :
- * la commande est créée puis marquée payée localement, ce qui permet de
- * dérouler le parcours complet en développement sans débiter personne.
+ * Fournisseur de développement : la commande est créée puis marquée payée
+ * localement, ce qui permet de dérouler le parcours complet sans débiter
+ * personne.
+ *
+ * Il ne peut pas s'activer en production — voir `getPaymentProvider`. Un
+ * mode démonstration qui survit au déploiement, c'est un paywall ouvert :
+ * n'importe qui obtient le rapport sans payer, et rien dans l'interface ne
+ * le signale.
  */
 class DemoProvider implements PaymentProvider {
   readonly name = "demo";
@@ -33,15 +40,41 @@ class DemoProvider implements PaymentProvider {
       raw: payload,
     };
   }
+
+  async verifyStatus(): Promise<PaymentStatus> {
+    return "SUCCESS";
+  }
 }
+
+/**
+ * Message affiché si l'application tourne en production sans agrégateur.
+ * Il est volontairement explicite : cette panne-là doit être diagnostiquée
+ * en dix secondes, pas en une soirée.
+ */
+const MISSING_PROVIDER =
+  "Aucun agrégateur de paiement n'est configuré alors que l'application " +
+  "tourne en production. Renseignez PAYMENT_PROVIDER (pawapay, monetbil ou " +
+  "payunit) et les clés correspondantes. Le mode démonstration est refusé " +
+  "ici : il livrerait le rapport sans encaisser.";
 
 export function getPaymentProvider(): PaymentProvider {
   const configured = (envOrNull("PAYMENT_PROVIDER") ?? "").toLowerCase();
 
+  if (configured === "pawapay") {
+    return new PawaPayProvider(
+      required("PAWAPAY_API_TOKEN"),
+      envOrNull("PAWAPAY_MODE") === "production" ? "production" : "sandbox",
+      // Clé publique de vérification des notifications signées. Facultative :
+      // le statut est de toute façon relu à la source avant livraison.
+      envOrNull("PAWAPAY_CALLBACK_PUBLIC_KEY"),
+    );
+  }
+
   if (configured === "monetbil") {
-    const key = required("MONETBIL_SERVICE_KEY");
-    const secret = required("MONETBIL_SERVICE_SECRET");
-    return new MonetbilProvider(key, secret);
+    return new MonetbilProvider(
+      required("MONETBIL_SERVICE_KEY"),
+      required("MONETBIL_SERVICE_SECRET"),
+    );
   }
 
   if (configured === "payunit") {
@@ -49,16 +82,25 @@ export function getPaymentProvider(): PaymentProvider {
       required("PAYUNIT_API_USER"),
       required("PAYUNIT_API_PASSWORD"),
       required("PAYUNIT_API_KEY"),
-      process.env.PAYUNIT_MODE === "live" ? "live" : "test",
+      envOrNull("PAYUNIT_MODE") === "live" ? "live" : "test",
       required("PAYUNIT_WEBHOOK_SECRET"),
     );
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(MISSING_PROVIDER);
   }
 
   return new DemoProvider();
 }
 
+/** Vrai si un vrai agrégateur encaisse — faux en mode démonstration. */
 export function isLivePaymentConfigured(): boolean {
-  return getPaymentProvider().name !== "demo";
+  try {
+    return getPaymentProvider().name !== "demo";
+  } catch {
+    return false;
+  }
 }
 
 function required(name: string): string {
@@ -71,4 +113,8 @@ function required(name: string): string {
   return value;
 }
 
-export type { PaymentProvider, WebhookResult } from "@/lib/payments/types";
+export type {
+  PaymentProvider,
+  PaymentStatus,
+  WebhookResult,
+} from "@/lib/payments/types";

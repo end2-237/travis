@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Clock, Download, FileText, MessageCircle } from "lucide-react";
+import { PaymentWatcher } from "@/components/checkout/payment-watcher";
 import { Footer } from "@/components/site/footer";
 import { PageHeader } from "@/components/site/page-header";
 import { getOrder, getReportDownloadUrl } from "@/server/orders";
@@ -25,6 +26,7 @@ export default async function DownloadPage({
   if (!order) notFound();
 
   const paid = order.payment_status === "SUCCESS";
+  const failed = order.payment_status === "FAILED";
   const downloadUrl = paid ? await getReportDownloadUrl(order) : null;
 
   return (
@@ -34,19 +36,27 @@ export default async function DownloadPage({
       <section className="shell pt-12 md:pt-16">
         <div className="mx-auto max-w-[620px]">
           <span className="eyebrow">
-            {paid ? "Paiement confirmé" : "Paiement en attente"}
+            {paid
+              ? "Paiement confirmé"
+              : failed
+                ? "Paiement refusé"
+                : "Paiement en attente"}
           </span>
 
           <h1 className="section-title mt-5">
             {paid
               ? "Votre feuille de route est prête"
-              : "Nous attendons la confirmation de votre opérateur"}
+              : failed
+                ? "Le paiement n'a pas abouti"
+                : "Nous attendons la confirmation de votre opérateur"}
           </h1>
 
           <p className="mt-3 text-[12.5px] leading-[1.6] text-ink-muted">
             {paid
               ? "Le rapport reprend votre audit d'admissibilité, les programmes retenus, le calendrier des démarches et la checklist documentaire."
-              : "Validez la demande reçue sur votre téléphone. Cette page se met à jour dès que l'opérateur nous notifie le règlement."}
+              : failed
+                ? "Aucun montant n'a été débité. Vous pouvez relancer le paiement depuis votre évaluation."
+                : "Validez la demande reçue sur votre téléphone. Cette page se met à jour toute seule — inutile de la recharger."}
           </p>
 
           <div className="mt-8 rounded-panel bg-white p-6 shadow-card">
@@ -79,13 +89,10 @@ export default async function DownloadPage({
                 Télécharger le rapport PDF
               </a>
             ) : (
-              <div className="mt-6 rounded-card border border-line bg-surface-soft p-4">
-                <p className="text-[11.5px] leading-[1.6] text-ink-muted">
-                  Une fois la transaction validée, le rapport est généré
-                  automatiquement et un lien vous est envoyé sur WhatsApp.
-                  Rechargez cette page dans quelques instants.
-                </p>
-              </div>
+              <PaymentWatcher
+                orderId={order.id}
+                initialState={failed ? "FAILED" : "PENDING"}
+              />
             )}
 
             <p className="mt-4 flex items-center gap-1.5 text-[11px] text-ink-faint">

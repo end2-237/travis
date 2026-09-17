@@ -85,6 +85,7 @@ export function Destinations() {
                 src={card.image}
                 alt={`${card.title} — ${card.country}`}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                priority={index === 0}
                 className="h-[198px] rounded-[15px]"
                 imageClassName="transition-transform duration-700 group-hover:scale-[1.06]"
               >

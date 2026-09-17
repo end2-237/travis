@@ -36,7 +36,7 @@ export function CtaBanner() {
               Offre de lancement
             </p>
             <p className="mt-1.5 text-[20px] font-semibold tracking-[-0.03em] text-white md:text-[24px]">
-              500 FCFA — dossier complet de 11 à 13 pages
+              500 FCFA — dossier complet de 11 à 15 pages
             </p>
           </div>
 

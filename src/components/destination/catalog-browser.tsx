@@ -12,11 +12,43 @@ import { cn, formatGpa, formatXaf } from "@/lib/utils";
 type Funding = "tous" | "integral" | "reduit";
 
 /** Parcours filtré du catalogue complet. */
+/** Trois rangées pleines en grand écran, largement de quoi se faire une idée. */
+const PAR_PAGE = 12;
+
 export function CatalogBrowser() {
   const [query, setQuery] = useState("");
   const [country, setCountry] = useState("");
   const [field, setField] = useState("");
   const [funding, setFunding] = useState<Funding>("tous");
+
+  /**
+   * Nombre de fiches rendues.
+   *
+   * Les 50 programmes d'un coup, c'est 50 images à décoder et 22 écrans de
+   * hauteur : la plus grande image visible mettait 3,5 s à s'afficher sur un
+   * mobile d'entrée de gamme en 3G — le public exact de ce produit. On rend
+   * ce qu'un visiteur parcourt réellement avant de filtrer, et il demande la
+   * suite s'il la veut.
+   */
+  const [visibles, setVisibles] = useState(PAR_PAGE);
+
+  /*
+   * Un nouveau filtre rend une nouvelle liste : conserver le décompte
+   * précédent afficherait « 36 / 4 », ou masquerait des fiches sans que rien
+   * ne l'indique.
+   *
+   * L'ajustement a lieu pendant le rendu, pas dans un effet. React relance
+   * alors le rendu sans rien peindre entre les deux ; un effet, lui,
+   * afficherait d'abord l'ancien décompte puis le corrigerait — un
+   * scintillement, et une cascade de rendus que la règle
+   * `set-state-in-effect` signale à juste titre.
+   */
+  const cleFiltres = `${query}|${country}|${field}|${funding}`;
+  const [derniereCle, setDerniereCle] = useState(cleFiltres);
+  if (cleFiltres !== derniereCle) {
+    setDerniereCle(cleFiltres);
+    setVisibles(PAR_PAGE);
+  }
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -35,6 +67,8 @@ export function CatalogBrowser() {
       );
     });
   }, [query, country, field, funding]);
+
+
 
   const reset = () => {
     setQuery("");
@@ -141,7 +175,7 @@ export function CatalogBrowser() {
         </p>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {results.map((entry, index) => (
+          {results.slice(0, visibles).map((entry, index) => (
             <Reveal key={entry.slug} delay={Math.min(index, 5) * 45}>
               <Link
                 href={`/destinations/${entry.slug}`}
@@ -151,6 +185,13 @@ export function CatalogBrowser() {
                   src={entry.image}
                   alt={`${entry.title} — ${entry.country}`}
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                  // Les deux premières vignettes sont au-dessus de la ligne
+                  // de flottaison : en chargement paresseux, le navigateur
+                  // attend la fin de la mise en page pour les demander, et
+                  // c'est justement l'une d'elles qui constitue le plus grand
+                  // élément peint. Sur un mobile bridé, cette attente coûtait
+                  // plus d'une seconde.
+                  priority={index < 2}
                   className="h-[160px] rounded-[15px]"
                   imageClassName="transition-transform duration-700 group-hover:scale-[1.06]"
                 >
@@ -196,6 +237,22 @@ export function CatalogBrowser() {
           ))}
         </div>
       )}
+
+      {results.length > visibles ? (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setVisibles((n) => n + PAR_PAGE)}
+            className="lift inline-flex h-11 items-center gap-2 rounded-full border border-line bg-white px-6 text-[13px] font-medium text-ink hover:bg-surface-soft"
+          >
+            Afficher {Math.min(PAR_PAGE, results.length - visibles)} programmes
+            de plus
+            <span className="text-ink-muted">
+              ({visibles} / {results.length})
+            </span>
+          </button>
+        </div>
+      ) : null}
     </>
   );
 }

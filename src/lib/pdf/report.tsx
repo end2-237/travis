@@ -7,6 +7,7 @@ import {
   View,
   renderToBuffer,
 } from "@react-pdf/renderer";
+import { join } from "node:path";
 import { buildTimeline } from "@/lib/pdf/checklist";
 import { catalogEntry } from "@/data/catalog";
 import { countryImage } from "@/data/images";
@@ -21,6 +22,17 @@ import type { RequiredDocument } from "@/data/procedure";
 import { pdfText } from "@/lib/pdf/text";
 import { formatGpa, formatXaf } from "@/lib/utils";
 import type { MatchSnapshot, StudentProfile } from "@/types/database";
+
+/**
+ * Logo embarqué dans le rapport.
+ *
+ * Lu sur le disque du serveur plutôt que par une URL : un PDF qui irait
+ * chercher son en-tête sur le réseau perdrait sa marque hors connexion, et
+ * ce document est fait pour être consulté justement là où il n'y a pas de
+ * réseau. `process.cwd()` pointe la racine de l'application, en
+ * développement comme dans l'image autonome.
+ */
+const LOGO_PATH = join(process.cwd(), "public", "brand", "travis-logo.png");
 
 const INK = "#101010";
 const MUTED = "#6f6f6f";
@@ -47,7 +59,7 @@ const s = StyleSheet.create({
     paddingBottom: 10,
     marginBottom: 22,
   },
-  brand: { fontSize: 12, fontFamily: "Helvetica-Bold", letterSpacing: -0.3 },
+  brandLogo: { height: 15, objectFit: "contain" },
   brandMeta: { fontSize: 8, color: FAINT },
   pageTitle: {
     fontSize: 20,
@@ -213,7 +225,12 @@ function Shell({
   return (
     <Page size="A4" style={s.page}>
       <View style={s.brandRow}>
-        <Text style={s.brand}>Travis</Text>
+        {/* Le logo, et non le mot : ce document sort de l'écran — il est
+            imprimé, transmis, montré à une famille ou à un conseiller. Il
+            doit se reconnaître sans être lu. Le fichier est lu depuis le
+            disque, donc embarqué dans le PDF : rien à télécharger à
+            l'ouverture, et le rapport reste lisible hors ligne. */}
+        <Image style={s.brandLogo} src={LOGO_PATH} />
         <Text style={s.brandMeta}>
           Feuille de route stratégique · {profileName}
         </Text>
@@ -497,7 +514,7 @@ export function ReportDocument({
 
         {coverCountry ? (
           <>
-            <Image style={s.cover} src={countryImage(coverCountry, 1400)} />
+            <Image style={s.cover} src={countryImage(coverCountry, 900)} />
             <Text style={s.coverCaption}>
               {profile.target_countries.length === 1
                 ? `Votre destination : ${pdfText(coverCountry)}`

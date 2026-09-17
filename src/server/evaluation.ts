@@ -29,6 +29,7 @@ export async function submitEvaluation(
     max_budget_xaf: Number(formData.get("max_budget_xaf") ?? Number.NaN),
     language_level: String(formData.get("language_level") ?? ""),
     focus_program: String(formData.get("focus_program") ?? ""),
+    visee: String(formData.get("visee") ?? "") || undefined,
   };
 
   const parsed = evaluationSchema.safeParse(raw);

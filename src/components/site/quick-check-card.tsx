@@ -6,7 +6,43 @@ import { ChevronDown, GraduationCap, Wallet } from "lucide-react";
 import { DEGREES, FIELDS } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 
-const TABS = ["Bourse", "Université", "Visa"] as const;
+/**
+ * Les trois entrées de la carte, et ce qu'elles font réellement.
+ *
+ * Elles écrivaient auparavant un paramètre `intent` que rien ne lisait :
+ * les trois menaient au même formulaire et donnaient le même résultat. Et
+ * « Visa » ne correspondait à aucune offre du catalogue — le produit ne
+ * propose pas de programme de visa, il documente les démarches consulaires.
+ *
+ * Chaque entrée mène désormais où elle dit :
+ *
+ *   Bourse      → évaluation restreinte aux financements intégraux
+ *   Université  → évaluation restreinte aux programmes universitaires
+ *   Démarches   → l'annuaire des guichets, qui est la vraie réponse à
+ *                 « comment j'obtiens mon visa »
+ */
+const TABS = [
+  {
+    id: "bourse",
+    label: "Bourse",
+    hint: "Programmes financés à 100 %",
+    cta: "Voir mes bourses",
+  },
+  {
+    id: "universite",
+    label: "Université",
+    hint: "Admission directe, scolarité à votre budget",
+    cta: "Voir mes universités",
+  },
+  {
+    id: "demarches",
+    label: "Démarches",
+    hint: "Visa, légalisation, traduction : qui délivre quoi",
+    cta: "Ouvrir l'annuaire",
+  },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
 
 /**
  * Carte flottante du hero — équivalent Travis du module « Find the best place ».
@@ -14,7 +50,8 @@ const TABS = ["Bourse", "Université", "Visa"] as const;
  */
 export function QuickCheckCard() {
   const router = useRouter();
-  const [tab, setTab] = useState<(typeof TABS)[number]>("Bourse");
+  const [tab, setTab] = useState<TabId>("bourse");
+  const active = TABS.find((t) => t.id === tab) ?? TABS[0];
   const [field, setField] = useState("");
   const [degree, setDegree] = useState("");
   const [gpa, setGpa] = useState("");
@@ -22,12 +59,22 @@ export function QuickCheckCard() {
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    // Les démarches ne dépendent ni de la filière ni de la moyenne : on
+    // envoie vers l'annuaire plutôt que de faire remplir un formulaire dont
+    // la réponse ne dira rien d'utile.
+    if (tab === "demarches") {
+      router.push("/partenaires#annuaire");
+      return;
+    }
+
     const params = new URLSearchParams();
     if (field) params.set("field", field);
     if (degree) params.set("degree", degree);
     if (gpa) params.set("gpa", gpa);
     if (budget) params.set("budget", budget);
-    params.set("intent", tab.toLowerCase());
+    // Lu par le moteur : restreint le matching au type de programme choisi.
+    params.set("visee", tab);
     router.push(`/evaluation?${params.toString()}`);
   }
 
@@ -44,22 +91,28 @@ export function QuickCheckCard() {
       <div className="mt-3.5 flex rounded-full bg-surface-sunk p-1">
         {TABS.map((item) => (
           <button
-            key={item}
+            key={item.id}
             type="button"
-            onClick={() => setTab(item)}
-            aria-pressed={tab === item}
+            onClick={() => setTab(item.id)}
+            aria-pressed={tab === item.id}
             className={cn(
               "h-9 flex-1 rounded-full text-[12px] font-medium transition-all",
-              tab === item
+              tab === item.id
                 ? "bg-white text-ink shadow-pill"
                 : "text-ink-muted hover:text-ink",
             )}
           >
-            {item}
+            {item.label}
           </button>
         ))}
       </div>
 
+      <p className="mt-2.5 text-center text-[11px] leading-[1.45] text-ink-muted">
+        {active.hint}
+      </p>
+
+      {tab !== "demarches" ? (
+        <>
       {/* Filière */}
       <div className="mt-4">
         <label htmlFor="qc-field" className="text-[11px] text-ink-muted">
@@ -153,12 +206,14 @@ export function QuickCheckCard() {
           />
         </div>
       </div>
+        </>
+      ) : null}
 
       <button
         type="submit"
         className="mt-4 h-12 w-full rounded-field bg-ink text-[13px] font-medium text-white transition-colors hover:bg-ink-soft"
       >
-        Explorer
+        {active.cta}
       </button>
     </form>
   );

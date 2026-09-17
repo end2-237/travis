@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { track, visitorFingerprint } from "@/lib/admin/analytics";
+import { callerKey, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -25,6 +26,12 @@ const schema = z.object({
  * journalière non réversible ; ni l'une ni l'autre n'est stockée.
  */
 export async function POST(request: NextRequest) {
+  // Une ligne en base par appel : sans plafond, la table d'audience est un
+  // vecteur de saturation gratuit. Un usage normal reste très en dessous.
+  if (!rateLimit(callerKey(request, "track"), 120, 60).allowed) {
+    return NextResponse.json({ ok: false }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -55,11 +62,14 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  await track({
+  // L'écriture n'est pas attendue : la réponse part tout de suite. Une base
+  // lente ne doit pas ralentir la navigation qu'elle est censée observer, et
+  // l'appelant ne fait rien de cette réponse.
+  void track({
     ...parsed.data,
     referrer,
     visitorHash: visitorFingerprint(ip, userAgent),
-  });
+  }).catch(() => {});
 
   return NextResponse.json({ ok: true });
 }

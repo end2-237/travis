@@ -10,7 +10,7 @@ import {
   Loader2,
   ShieldCheck,
 } from "lucide-react";
-import { Input, Select, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input, Select, FieldLabel } from "@/components/ui/field";
 import {
   BUDGET_BRACKETS,
   COUNTRIES,
@@ -126,6 +126,7 @@ export function StepperForm() {
 
     if (Object.keys(collected).length > 0) {
       setErrors(collected);
+      focusPremiereErreur(collected);
       return;
     }
     setErrors({});
@@ -145,6 +146,7 @@ export function StepperForm() {
         collected[String(issue.path[0])] ??= issue.message;
       }
       setErrors(collected);
+      focusPremiereErreur(collected);
     }
   }
 
@@ -228,12 +230,12 @@ export function StepperForm() {
               <FieldLabel>Nom complet</FieldLabel>
               <Input
                 name="full_name"
+                error={allErrors.full_name}
                 value={values.full_name}
                 onChange={(e) => set("full_name", e.target.value)}
                 placeholder="ex. Aïcha Nkoulou"
                 autoComplete="name"
               />
-              <FieldError>{allErrors.full_name}</FieldError>
             </label>
 
             <label className="block">
@@ -242,25 +244,25 @@ export function StepperForm() {
               </FieldLabel>
               <Input
                 name="phone_number"
+                error={allErrors.phone_number}
                 value={values.phone_number}
                 onChange={(e) => set("phone_number", e.target.value)}
                 placeholder="+237 6 99 00 11 22"
                 inputMode="tel"
                 autoComplete="tel"
               />
-              <FieldError>{allErrors.phone_number}</FieldError>
             </label>
 
             <label className="block">
               <FieldLabel>Ville de résidence</FieldLabel>
               <Input
                 name="city"
+                error={allErrors.city}
                 value={values.city}
                 onChange={(e) => set("city", e.target.value)}
                 placeholder="ex. Douala"
                 autoComplete="address-level2"
               />
-              <FieldError>{allErrors.city}</FieldError>
             </label>
           </div>
         ) : null}
@@ -271,6 +273,7 @@ export function StepperForm() {
               <FieldLabel>Dernier diplôme obtenu</FieldLabel>
               <Select
                 name="current_degree"
+                error={allErrors.current_degree}
                 value={values.current_degree}
                 onChange={(e) => set("current_degree", e.target.value)}
               >
@@ -281,13 +284,13 @@ export function StepperForm() {
                   </option>
                 ))}
               </Select>
-              <FieldError>{allErrors.current_degree}</FieldError>
             </label>
 
             <label className="block">
               <FieldLabel>Filière exacte</FieldLabel>
               <Select
                 name="field_of_study"
+                error={allErrors.field_of_study}
                 value={values.field_of_study}
                 onChange={(e) => set("field_of_study", e.target.value)}
               >
@@ -298,7 +301,6 @@ export function StepperForm() {
                   </option>
                 ))}
               </Select>
-              <FieldError>{allErrors.field_of_study}</FieldError>
             </label>
 
             <label className="block">
@@ -307,12 +309,12 @@ export function StepperForm() {
               </FieldLabel>
               <Input
                 name="gpa_score"
+                error={allErrors.gpa_score}
                 value={values.gpa_score}
                 onChange={(e) => set("gpa_score", e.target.value)}
                 placeholder="ex. 12,75"
                 inputMode="decimal"
               />
-              <FieldError>{allErrors.gpa_score}</FieldError>
             </label>
           </div>
         ) : null}
@@ -347,13 +349,13 @@ export function StepperForm() {
               <p className="mt-2 text-[11px] text-ink-faint">
                 Laissez vide pour explorer toutes les destinations.
               </p>
-              <FieldError>{allErrors.target_countries}</FieldError>
             </div>
 
             <label className="block">
               <FieldLabel>Budget maximal disponible par an</FieldLabel>
               <Select
                 name="max_budget_xaf"
+                error={allErrors.max_budget_xaf}
                 value={values.max_budget_xaf}
                 onChange={(e) => set("max_budget_xaf", e.target.value)}
               >
@@ -364,13 +366,13 @@ export function StepperForm() {
                   </option>
                 ))}
               </Select>
-              <FieldError>{allErrors.max_budget_xaf}</FieldError>
             </label>
 
             <label className="block">
               <FieldLabel>Niveau de langue</FieldLabel>
               <Select
                 name="language_level"
+                error={allErrors.language_level}
                 value={values.language_level}
                 onChange={(e) => set("language_level", e.target.value)}
               >
@@ -381,7 +383,6 @@ export function StepperForm() {
                   </option>
                 ))}
               </Select>
-              <FieldError>{allErrors.language_level}</FieldError>
             </label>
           </div>
         ) : null}
@@ -449,6 +450,30 @@ export function StepperForm() {
       </form>
     </div>
   );
+}
+
+/**
+ * Amène le curseur sur le premier champ en erreur.
+ *
+ * Sans cela, le focus restait sur le bouton « Continuer » et la page ne
+ * bougeait pas : sur mobile, trois erreurs plus haut dans un formulaire qui
+ * dépasse l'écran, rien n'indique où aller. `preventScroll: false` fait
+ * défiler jusqu'au champ, et le message rattaché par `aria-describedby` est
+ * annoncé en même temps.
+ */
+function focusPremiereErreur(errors: Record<string, string>): void {
+  const premier = Object.keys(errors)[0];
+  if (!premier) return;
+
+  // Le rendu de l'état d'erreur a lieu au tour suivant : on attend la frame
+  // pour que le champ porte déjà `aria-invalid` quand il prend le focus.
+  requestAnimationFrame(() => {
+    const champ = document.querySelector<HTMLElement>(
+      `[name="${premier}"]:not([type="hidden"])`,
+    );
+    champ?.focus();
+    champ?.scrollIntoView({ block: "center", behavior: "smooth" });
+  });
 }
 
 /**

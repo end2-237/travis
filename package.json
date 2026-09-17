@@ -7,13 +7,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types --no-warnings 'tests/**/*.test.ts'",
     "seed:generate": "node --experimental-strip-types --no-warnings scripts/generate-seed.mjs"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.3.0",
-    "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.58.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

@@ -109,7 +109,7 @@ export function UnlockPanel({
             500 FCFA
           </p>
           <p className="mt-1.5 text-[11px] text-ink-muted">
-            Paiement unique · 11 à 13 pages
+            Paiement unique · 11 à 15 pages
           </p>
         </div>
         <span className="rounded-full bg-surface-sunk px-2.5 py-1 text-[10px] text-ink-muted">

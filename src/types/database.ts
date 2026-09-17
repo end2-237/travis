@@ -38,6 +38,8 @@ export interface StudentProfile {
   language_level: string | null;
   /** Programme visé quand l'évaluation porte sur une seule opportunité. */
   focus_program: string | null;
+  /** Matching figé à l'évaluation ; absent sur les profils antérieurs. */
+  match_snapshot?: MatchSnapshot | null;
   created_at: string;
 }
 

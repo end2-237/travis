@@ -1,3 +1,4 @@
+import { Logo } from "@/components/site/logo";
 import { Suspense } from "react";
 import { SignInForm } from "@/components/admin/sign-in-form";
 import { isAdminConfigured } from "@/lib/admin/auth";
@@ -11,11 +12,9 @@ export default function SignInPage() {
     <main className="grid min-h-dvh place-items-center px-4">
       <div className="w-full max-w-[380px]">
         <div className="mb-8 flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-ink text-[11px] font-semibold text-white">
-            TR
-          </span>
-          <span className="text-[16px] font-semibold tracking-tight">
-            Travis · Back-office
+          <Logo size="md" />
+          <span className="rounded-full bg-surface-sunk px-2.5 py-1 text-[10.5px] font-medium text-ink-muted">
+            Back-office
           </span>
         </div>
 

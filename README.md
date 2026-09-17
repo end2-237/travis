@@ -340,7 +340,7 @@ informer ne doit pas pouvoir disparaître à cause d'une animation.
 
 ### Rapport PDF
 
-11 à 13 pages selon le nombre de correspondances :
+11 à 15 pages selon le nombre de correspondances :
 
 1. Synthèse du profil et audit d'admissibilité
 2. – 3. Programmes recommandés, chiffrés et classés, avec l'appel officiel
@@ -443,3 +443,32 @@ src/
 ├── server/                            Server Actions et accès aux données
 └── types/database.ts
 ```
+
+### Paiement — pawaPay
+
+`PAYMENT_PROVIDER=pawapay`, plus `PAWAPAY_API_TOKEN` et `PAWAPAY_MODE`
+(`sandbox` ou `production`). L'URL de notification à déclarer dans le tableau
+de bord pawaPay est `https://VOTRE-DOMAINE/api/webhooks/payment`.
+
+Deux principes tiennent cette intégration.
+
+**La notification ne décide jamais du paiement.** Elle sert de déclencheur ;
+le statut est ensuite relu à la source par un appel sortant authentifié vers
+`GET /v2/deposits/{id}`. Une notification forgée ne peut donc rien débloquer,
+même si la vérification de signature venait à être désactivée côté tableau de
+bord. C'est la seule architecture qui reste sûre quand la configuration, elle,
+ne l'est pas.
+
+**L'identifiant de dépôt est celui de la commande.** pawaPay exige un UUID et
+refuse les doublons (`DUPLICATE_IGNORED`) : réutiliser l'identifiant de la
+commande rend le paiement naturellement idempotent — un double clic ne débite
+pas deux fois.
+
+Le mode démonstration, qui honore la commande sans débiter, **ne peut plus
+s'activer en production** : `getPaymentProvider()` lève, et `/api/checkout`
+répond 503. Un paywall ouvert par défaut n'est pas un paywall.
+
+Les codes d'échec de pawaPay sont traduits en messages actionnables — solde
+insuffisant, code non saisi à temps, numéro qui n'appartient pas à
+l'opérateur choisi — et affichés sur la page d'attente, qui interroge
+`/api/orders/[id]/status` toutes les trois secondes puis toutes les huit.

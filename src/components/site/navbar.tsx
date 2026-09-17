@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Facebook, Instagram, Linkedin, Menu, X } from "lucide-react";
+import { Logo } from "@/components/site/logo";
 import { NAV_LINKS } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
@@ -13,11 +14,10 @@ export function Navbar() {
     <div className="absolute inset-x-0 top-0 z-30 px-3 pt-3 md:px-5 md:pt-5">
       <nav className="mx-auto flex h-14 w-full max-w-[1216px] items-center rounded-full bg-white/96 pl-4 pr-2 shadow-pill backdrop-blur-sm md:h-16 md:pl-5 md:pr-2.5">
         {/* Marque */}
-        <Link href="/" className="flex shrink-0 items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-[10px] font-semibold tracking-tight text-white">
-            TR
-          </span>
-          <span className="text-[15px] font-semibold tracking-tight">Travis</span>
+        <Link href="/" className="flex shrink-0 items-center" aria-label="Travis, accueil">
+          {/* Le logo est le premier élément peint de la page : chargé en
+              priorité, il évite le saut de mise en page de la barre. */}
+          <Logo size="md" priority />
         </Link>
 
         {/* Liens — centrés */}

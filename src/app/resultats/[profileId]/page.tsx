@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Globe2, Sparkles, Wallet } from "lucide-react";
+import { FunnelEvent } from "@/components/analytics/page-view";
 import { Reveal } from "@/components/motion/reveal";
 import { CountUp } from "@/components/motion/count-up";
 import { MatchList } from "@/components/results/match-list";
@@ -36,6 +37,7 @@ export default async function ResultsPage({
 
   return (
     <main>
+      <FunnelEvent kind="evaluation_completed" />
       <PageHeader />
 
       <section className="shell pt-12 md:pt-16">
@@ -180,7 +182,7 @@ export default async function ResultsPage({
               <p className="mt-3 max-w-[58ch] text-[12.5px] leading-[1.65] text-ink-muted">
                 Vous avez maintenant toutes les informations à l&apos;écran. Le
                 rapport ne les cache pas : il les met en ordre. Un document de
-                11 à 13 pages, imprimable et transmissible, avec votre
+                11 à 15 pages, imprimable et transmissible, avec votre
                 calendrier personnel et la démarche complète pour chaque pièce
                 du dossier de{" "}
                 <strong className="font-medium text-ink">vos</strong> programmes.

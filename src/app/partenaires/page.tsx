@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { PageViewTracker } from "@/components/analytics/page-view";
 import { Reveal } from "@/components/motion/reveal";
 import { CountUp } from "@/components/motion/count-up";
 import { WordRise } from "@/components/motion/split-words";
@@ -95,7 +94,6 @@ export default async function PartnersPage() {
 
   return (
     <main>
-      <PageViewTracker />
       <ScrollProgress />
       <PageHeader />
 

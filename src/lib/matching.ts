@@ -2,6 +2,11 @@ import "server-only";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase/admin";
 import { FALLBACK_CATALOG } from "@/lib/fallback-catalog";
 import { regionOf } from "@/lib/regions";
+import {
+  computeAdmissibilityScore,
+  scoreScholarship,
+  sortMatches,
+} from "@/lib/scoring";
 import { catalogEntry } from "@/data/catalog";
 import { countryList, plural, withDegreeArticle } from "@/lib/grammar";
 import type {
@@ -22,6 +27,13 @@ export interface MatchInput {
   language_level?: string | null;
   /** Slug du programme quand l'évaluation cible une opportunité précise. */
   focus_program?: string | null;
+  /**
+   * Type d'offre demandé depuis la carte d'accueil.
+   * « bourse » : financement intégral seulement.
+   * « universite » : admission directe, scolarité à la charge du candidat.
+   * Absent : tout le catalogue.
+   */
+  visee?: "bourse" | "universite" | null;
 }
 
 /**
@@ -188,11 +200,16 @@ export async function fetchEligibleScholarships(
       (s) =>
         s.min_gpa_20 <= input.gpa_score &&
         s.degree_levels.some((d) => targetDegrees.includes(d)) &&
-        s.eligible_fields.includes(input.field_of_study),
+        s.eligible_fields.includes(input.field_of_study) &&
+        (input.visee === "bourse"
+          ? s.fully_funded
+          : input.visee === "universite"
+            ? !s.fully_funded
+            : true),
     );
   }
 
-  const { data, error } = await getSupabaseAdmin()
+  let query = getSupabaseAdmin()
     .from("scholarships")
     .select("*")
     .eq("is_active", true)
@@ -200,62 +217,19 @@ export async function fetchEligibleScholarships(
     .overlaps("degree_levels", targetDegrees)
     .contains("eligible_fields", [input.field_of_study]);
 
+  // La carte d'accueil propose « Bourse » ou « Université » : la distinction
+  // doit se voir dans le résultat, sans quoi les deux boutons mènent au même
+  // écran et ne promettent rien.
+  if (input.visee === "bourse") query = query.eq("fully_funded", true);
+  if (input.visee === "universite") query = query.eq("fully_funded", false);
+
+  const { data, error } = await query;
+
   if (error) {
     throw new Error(`Échec du matching d'admissibilité : ${error.message}`);
   }
 
   return (data ?? []) as Scholarship[];
-}
-
-/**
- * Score de compatibilité 0–100 d'un programme pour un profil donné.
- * Marge de moyenne (45 pts) + budget (30 pts) + pays visé (15 pts)
- * + financement intégral (10 pts).
- */
-export function scoreScholarship(
-  scholarship: Scholarship,
-  input: MatchInput,
-): ScoredScholarship {
-  const gpaMargin = Number(
-    (input.gpa_score - scholarship.min_gpa_20).toFixed(2),
-  );
-  const withinBudget =
-    input.max_budget_xaf === null ||
-    Number(scholarship.annual_cost_xaf) <= input.max_budget_xaf;
-  const countryTargeted =
-    input.target_countries.length === 0 ||
-    input.target_countries.includes(scholarship.country);
-
-  // Une marge de 4 points sur 20 sature la composante académique.
-  const gpaPoints = Math.round(Math.min(gpaMargin / 4, 1) * 45);
-  const budgetPoints = withinBudget ? 30 : Math.max(0, 30 - 20);
-  const countryPoints = countryTargeted ? 15 : 4;
-  const fundingPoints = scholarship.fully_funded ? 10 : 5;
-
-  return {
-    ...scholarship,
-    fit_score: Math.min(
-      100,
-      gpaPoints + budgetPoints + countryPoints + fundingPoints,
-    ),
-    gpa_margin: gpaMargin,
-    within_budget: withinBudget,
-    country_targeted: countryTargeted,
-  };
-}
-
-/** Score d'admissibilité global du profil, affiché dans le teaser. */
-export function computeAdmissibilityScore(
-  matches: ScoredScholarship[],
-): number {
-  if (matches.length === 0) return 0;
-
-  const top = matches.slice(0, 5);
-  const avgFit = top.reduce((sum, m) => sum + m.fit_score, 0) / top.length;
-  // Le volume d'options compte pour 20 % du score global.
-  const breadth = Math.min(matches.length / 10, 1) * 20;
-
-  return Math.round(Math.min(99, avgFit * 0.8 + breadth));
 }
 
 /** Résumé chiffré : volumes, régions, et priorité aux destinations visées. */
@@ -330,23 +304,6 @@ export function buildTeaser(
 }
 
 
-/**
- * Tri des correspondances.
- *
- * Les destinations demandées passent devant, toujours : un candidat qui a
- * coché la Turquie et l'Italie ne veut pas voir l'Inde en tête parce qu'elle
- * y a une meilleure marge de moyenne. Le score départage à l'intérieur de
- * chaque groupe, il ne mélange pas les deux.
- */
-function sortMatches(matches: ScoredScholarship[]): ScoredScholarship[] {
-  return [...matches].sort((a, b) => {
-    if (a.country_targeted !== b.country_targeted) {
-      return a.country_targeted ? -1 : 1;
-    }
-    return b.fit_score - a.fit_score || a.min_gpa_20 - b.min_gpa_20;
-  });
-}
-
 /** Matching complet : requête, scoring, tri et teaser. */
 export async function runMatching(input: MatchInput): Promise<MatchSnapshot> {
   const eligible = await fetchEligibleScholarships(input);
@@ -371,3 +328,7 @@ export async function runMatching(input: MatchInput): Promise<MatchSnapshot> {
     teaser: buildTeaser(matches, input.target_countries),
   };
 }
+
+// Réexportés depuis `scoring` : le point d'entrée du moteur reste unique
+// pour le reste de l'application.
+export { computeAdmissibilityScore, scoreScholarship, sortMatches };

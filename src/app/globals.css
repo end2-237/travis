@@ -11,20 +11,51 @@
   --color-surface-soft: #f7f7f5;
   --color-surface-sunk: #efefec;
 
-  /* Encre */
+  /*
+   * Encre.
+   *
+   * Les deux gris secondaires ont été assombris : #8a8a8a donnait 3,13:1
+   * sur le canvas et #b4b4b4 seulement 1,88:1, là où WCAG AA demande 4,5:1
+   * pour du texte courant. Or ils portaient les prix, les délais, les
+   * moyennes d'entrée et la couverture de financement — pas de la
+   * décoration. Le public lit en plein soleil sur des écrans d'entrée de
+   * gamme : c'est le cas d'usage le plus exigeant, pas le plus indulgent.
+   *
+   * Ratios mesurés sur le canvas #f4f4f2 :
+   *   ink-soft  #3d3d3d  11,0:1
+   *   ink-muted #5f5f5f   5,8:1
+   *   ink-faint #6f6f6f   4,6:1
+   * La hiérarchie des trois niveaux est conservée.
+   */
   --color-ink: #101010;
   --color-ink-soft: #3d3d3d;
-  --color-ink-muted: #8a8a8a;
-  --color-ink-faint: #b4b4b4;
+  --color-ink-muted: #5f5f5f;
+  --color-ink-faint: #6f6f6f;
 
   /* Lignes */
   --color-line: #e8e8e4;
   --color-line-strong: #dcdcd7;
 
+  /*
+   * Marque.
+   *
+   * Relevées sur le logo : le bleu profond porte le nom, le bleu clair la
+   * pointe de la flèche et le point final. Le noir reste la couleur
+   * principale de l'interface — la marque ponctue, elle n'inonde pas.
+   *
+   * Contrastes sur blanc : brand 8,9:1, brand-light 2,9:1. Le bleu clair
+   * est donc réservé aux aplats et aux signes, jamais à du texte courant.
+   */
+  --color-brand: #1b3fa0;
+  --color-brand-mid: #2f7fd4;
+  --color-brand-light: #3aa9e8;
+
   /* Accents */
   --color-gold: #f2d047;
   --color-lime: #b9e56d;
-  --color-electric: #1f6feb;
+  /* Aligné sur le bleu de marque : deux bleus voisins mais distincts
+     donnaient l'impression d'une charte mal tenue. */
+  --color-electric: #1b3fa0;
   --color-star: #f5a524;
   --color-positive: #17a34a;
 
@@ -637,6 +668,8 @@
 }
 
 /* Wordmark géant du pied de page, rogné en bas comme sur la maquette */
+/* Décoratif — porté par un élément aria-hidden, d'où une teinte qui ne
+   prétend pas au seuil de lisibilité d'un texte. */
 .wordmark {
   font-size: clamp(76px, 16.9vw, 260px);
   line-height: 0.78;
