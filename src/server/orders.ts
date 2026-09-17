@@ -1,6 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { renderReport } from "@/lib/pdf/report";
+import { envOrNull } from "@/lib/site";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase/admin";
 import { loadEvaluation } from "@/server/profiles";
 import {
@@ -11,7 +12,15 @@ import {
 } from "@/server/session-store";
 import type { MatchSnapshot, Order } from "@/types/database";
 
-const REPORTS_BUCKET = "reports";
+/**
+ * Compartiment de stockage des rapports.
+ *
+ * Les compartiments Supabase Storage sont communs à toute l'instance, et non
+ * propres à un schéma : sur une instance partagée, deux applications qui
+ * écrivent toutes deux dans « reports » se mélangent les fichiers. Le nom
+ * porte donc celui de l'application.
+ */
+const REPORTS_BUCKET = envOrNull("SUPABASE_STORAGE_BUCKET") ?? "reports";
 
 export async function createOrder(input: {
   profileId: string;

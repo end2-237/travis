@@ -68,6 +68,57 @@ psql "$DATABASE_URL" -f supabase/seed-partners.sql     # emplacements partenaire
   `official_website`, pour les fiches détaillées.
 - `supabase/seed.sql` — **fichier généré**, ne pas éditer à la main.
 
+### Installation sur une instance PostgreSQL partagée
+
+Quand la même instance héberge plusieurs applications, Travis ne peut pas
+s'installer dans `public` : deux applications y créeraient tôt ou tard une
+table `orders` ou `partners` et se marcheraient dessus. Tout vit donc dans un
+schéma nommé — ce qui donne aussi une sauvegarde et une suppression en une
+seule commande.
+
+```bash
+psql "$SUPERUSER_URL" -f supabase/schema-travis.sql
+psql "$SUPERUSER_URL" -f supabase/seed-travis.sql
+psql "$SUPERUSER_URL" -v mot_de_passe="'…'" -f supabase/role-travis-app.sql
+```
+
+Les trois fichiers sont **rejouables** : les relancer ne duplique rien.
+
+Puis, avec la connexion réelle de l'application :
+
+```bash
+psql "$DATABASE_URL" -c 'select * from travis.healthcheck();'
+```
+
+Les six lignes doivent afficher `ok`. Ce contrôle existe parce que le pire
+mode de panne de ce montage n'est pas une erreur, c'est le silence : un rôle
+soumis à RLS sans politique lit **zéro ligne sans lever d'exception**, et
+l'application affiche un catalogue vide sans que rien n'indique pourquoi.
+C'est aussi la raison du `bypassrls` porté par `travis_app` — l'équivalent
+exact de `service_role` chez Supabase, l'autorisation de Travis étant portée
+par le serveur applicatif et non par une identité PostgreSQL.
+
+Deux variables suffisent côté application :
+
+| Variable | Instance dédiée | Instance partagée |
+| --- | --- | --- |
+| `SUPABASE_DB_SCHEMA` | vide (`public`) | `travis` |
+| `SUPABASE_STORAGE_BUCKET` | vide (`reports`) | `travis-reports` |
+
+Si l'accès passe par `supabase-js`, donc par PostgREST, le schéma doit lui
+être exposé — sans quoi chaque requête répond « schema must be one of the
+following » :
+
+```
+PGRST_DB_SCHEMAS=public,travis
+```
+
+Sauvegarder ou déplacer Travis sans toucher aux voisins :
+
+```bash
+pg_dump "$DATABASE_URL" --schema=travis --no-owner > travis.sql
+```
+
 ### Le catalogue
 
 `src/data/programs.ts` est la source de vérité du contenu : 50 programmes,

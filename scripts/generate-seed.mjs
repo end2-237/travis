@@ -14,6 +14,18 @@ const { PROGRAMS: programs } = await import(
   pathToFileURL("src/data/programs.ts").href
 );
 
+/**
+ * Schéma cible. L'instance de production est partagée entre plusieurs
+ * applications : Travis y vit dans son propre schéma, et `public` ne lui
+ * appartient pas.
+ *
+ *   node scripts/generate-seed.mjs            → supabase/seed.sql      (public)
+ *   SCHEMA=travis node scripts/generate-seed.mjs → supabase/seed-travis.sql
+ */
+const schema = process.env.SCHEMA ?? "public";
+const outFile =
+  schema === "public" ? "supabase/seed.sql" : `supabase/seed-${schema}.sql`;
+
 const q = (v) => `'${String(v).replace(/'/g, "''")}'`;
 const arr = (items) => `ARRAY[${items.map(q).join(",")}]::text[]`;
 const nullable = (v) => (v === null || v === undefined ? "NULL" : v);
@@ -36,7 +48,7 @@ const sql = `-- ================================================================
 -- Idempotent : relançable sans dupliquer de ligne (clé = slug).
 -- =====================================================================
 
-insert into public.scholarships
+insert into ${schema}.scholarships
   (slug, title, country, institution, degree_levels, eligible_fields,
    min_gpa_20, max_age, funding_coverage, deadline_month,
    language_requirements, annual_cost_xaf, fully_funded,
@@ -61,5 +73,5 @@ on conflict (slug) do update set
   notes                 = excluded.notes;
 `;
 
-writeFileSync("supabase/seed.sql", sql);
-console.log(`✓ supabase/seed.sql régénéré — ${programs.length} programmes`);
+writeFileSync(outFile, sql);
+console.log(`✓ ${outFile} régénéré — ${programs.length} programmes (schéma ${schema})`);
