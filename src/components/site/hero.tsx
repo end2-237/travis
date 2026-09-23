@@ -51,11 +51,15 @@ export function Hero() {
             src={IMG.hero.src}
             alt={IMG.hero.alt}
             priority
-            scrim="full"
             sizes="100vw"
             className="absolute inset-0 h-full w-full"
           />
         </Parallax>
+
+        {/* Voile de lecture solidaire du cadre, et non de la photo : dans le
+            parallaxe, il glissait avec l'image et sa partie dense quittait le
+            bas de la scène, là où se trouve le titre. */}
+        <div aria-hidden className="scrim absolute inset-0" />
 
         {/* Dédale kuba en lumière douce : il n'assombrit rien, il donne au
             voile une trame au lieu d'un aplat noir. */}

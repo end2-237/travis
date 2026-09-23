@@ -91,11 +91,16 @@ export default async function DestinationPage({
               src={entry.image}
               alt={`${entry.institution} — ${entry.country}`}
               priority
-              scrim="full"
               sizes="100vw"
               className="absolute inset-0 h-full w-full"
             />
           </Parallax>
+
+          {/* Le voile reste solidaire du cadre, pas de la photo.
+              À l'intérieur du parallaxe il glissait avec l'image : sa partie
+              dense se retrouvait décalée du bas de la scène, là où le titre
+              est justement posé. */}
+          <div aria-hidden className="scrim absolute inset-0" />
 
           <div className="relative flex min-h-[420px] items-end p-6 md:min-h-[500px] md:p-10 lg:p-14">
             <Reveal from="up" duration={800}>

@@ -72,12 +72,27 @@ export function Parallax({
   }, [amount, reduced]);
 
   return (
-    <div ref={outer} className={cn("overflow-hidden", className)}>
+    <div ref={outer} className={cn("relative overflow-hidden", className)}>
+      {/*
+       * La piste déborde du cadre de `amount` en haut comme en bas : quelle
+       * que soit la position du défilement, le décalage ne peut pas
+       * découvrir le fond.
+       *
+       * Ce débord se fait par les inserts, et non par un `padding` compensé
+       * d'une marge négative. L'ancienne version cumulait deux pièges :
+       * `height: 100%` en `border-box` faisait *rentrer* le padding dans la
+       * hauteur au lieu de l'ajouter, et `will-change: transform` fait de
+       * cette piste le bloc conteneur de ses descendants absolus — un
+       * enfant en `inset-0` se calait donc sur la boîte de contenu, amputée
+       * de deux fois `amount`. Sur la fiche programme, la photo s'arrêtait
+       * 96 px avant le bas de la scène : le dernier mot du titre et le nom
+       * de l'établissement, écrits en blanc, tombaient sur le fond clair de
+       * la page et devenaient illisibles.
+       */}
       <div
         ref={inner}
-        className="h-full w-full will-change-transform"
-        // Marge verticale : le décalage ne doit jamais découvrir le fond.
-        style={{ paddingBlock: `${amount}px`, marginBlock: `-${amount}px` }}
+        className="absolute inset-x-0 will-change-transform"
+        style={{ top: `-${amount}px`, bottom: `-${amount}px` }}
       >
         {children}
       </div>
