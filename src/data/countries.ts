@@ -336,6 +336,193 @@ export const COUNTRY_PROFILES: Record<string, CountryProfile> = {
     work: "Selon la réglementation du pays d'accueil.",
     currency: "Variable",
   },
+  Tchéquie: {
+    livingCostXaf: 230_000,
+    housingCostXaf: 130_000,
+    housing:
+      "Résidences universitaires publiques très abordables, attribuées en priorité aux boursiers d'État. Le privé reste accessible à Brno et Ostrava, nettement moins à Prague.",
+    visa: "Visa long séjour étudiant déposé à l'ambassade de Tchéquie, après la lettre d'admission. Preuve de ressources et assurance santé exigées au dépôt.",
+    visaLeadTime: "8 à 12 semaines",
+    intake: ["Septembre"],
+    work: "Travail autorisé sans permis distinct pour les étudiants inscrits à temps plein.",
+    currency: "Couronne tchèque (CZK)",
+  },
+  Suisse: {
+    livingCostXaf: 750_000,
+    housingCostXaf: 450_000,
+    housing:
+      "Logement rare et cher. Les résidences universitaires ont des listes d'attente longues ; la colocation est la norme.",
+    visa: "Visa D étudiant déposé à l'ambassade de Suisse, avec preuve de moyens financiers pour toute l'année.",
+    visaLeadTime: "8 à 12 semaines",
+    intake: ["Septembre", "Février"],
+    work: "15 heures par semaine maximum, et seulement après six mois de séjour.",
+    currency: "Franc suisse (CHF)",
+  },
+  Autriche: {
+    livingCostXaf: 420_000,
+    housingCostXaf: 230_000,
+    housing:
+      "Résidences étudiantes gérées par des fondations, à réserver très tôt. Vienne est la ville la plus tendue.",
+    visa: "Visa D puis titre de séjour étudiant. Le dossier exige un justificatif de ressources mensuelles et une assurance.",
+    visaLeadTime: "10 à 14 semaines",
+    intake: ["Octobre", "Mars"],
+    work: "20 heures par semaine autorisées pour les étudiants non européens.",
+    currency: "Euro (EUR)",
+  },
+  Irlande: {
+    livingCostXaf: 520_000,
+    housingCostXaf: 350_000,
+    housing:
+      "Crise du logement réelle à Dublin : commencez la recherche avant même l'obtention du visa, et regardez Cork, Galway ou Limerick.",
+    visa: "Visa étudiant irlandais déposé en ligne, puis enregistrement à l'immigration à l'arrivée. Preuve de 10 000 € de ressources exigée.",
+    visaLeadTime: "6 à 10 semaines",
+    intake: ["Septembre", "Janvier"],
+    work: "20 heures par semaine pendant les cours, 40 pendant les vacances.",
+    currency: "Euro (EUR)",
+  },
+  Espagne: {
+    livingCostXaf: 330_000,
+    housingCostXaf: 200_000,
+    housing:
+      "Colocation généralisée dans les villes universitaires. Les résidences privées sont chères, les publiques peu nombreuses.",
+    visa: "Visa étudiant déposé au consulat d'Espagne, avec certificat médical et casier judiciaire pour les séjours de plus de six mois.",
+    visaLeadTime: "6 à 10 semaines",
+    intake: ["Septembre", "Février"],
+    work: "30 heures par semaine autorisées depuis la réforme du règlement des étrangers.",
+    currency: "Euro (EUR)",
+  },
+  Lettonie: {
+    livingCostXaf: 230_000,
+    housingCostXaf: 120_000,
+    housing:
+      "Résidences universitaires bon marché à Riga, chambres partagées. Le privé reste abordable comparé à l'Europe de l'Ouest.",
+    visa: "Visa D puis permis de séjour temporaire, déposé auprès de la représentation lettone compétente.",
+    visaLeadTime: "8 à 12 semaines",
+    intake: ["Septembre", "Février"],
+    work: "20 heures par semaine autorisées pendant les études.",
+    currency: "Euro (EUR)",
+  },
+  Russie: {
+    livingCostXaf: 200_000,
+    housingCostXaf: 70_000,
+    housing:
+      "Résidence universitaire quasi systématique pour les boursiers du quota, chambre partagée à 2 ou 3.",
+    visa: "Visa étudiant délivré sur invitation officielle du ministère, puis enregistrement obligatoire dans les sept jours suivant l'arrivée.",
+    visaLeadTime: "4 à 8 semaines après réception de l'invitation",
+    intake: ["Septembre"],
+    work: "Travail autorisé avec un permis distinct, en pratique difficile à obtenir la première année.",
+    currency: "Rouble (RUB)",
+  },
+  Singapour: {
+    livingCostXaf: 520_000,
+    housingCostXaf: 330_000,
+    housing:
+      "Résidences de campus pour les doctorants, sinon colocation en HDB. Le marché est cher mais bien organisé.",
+    visa: "Student's Pass demandé par l'université via le portail SOLAR, avant l'arrivée.",
+    visaLeadTime: "4 à 6 semaines",
+    intake: ["Août", "Janvier"],
+    work: "16 heures par semaine pendant les cours, pour les étudiants des établissements agréés.",
+    currency: "Dollar de Singapour (SGD)",
+  },
+  Brunei: {
+    livingCostXaf: 220_000,
+    housingCostXaf: 0,
+    housing:
+      "Logement universitaire fourni aux boursiers du gouvernement, repas compris dans la plupart des cas.",
+    visa: "Visa étudiant obtenu par l'université après l'octroi de la bourse.",
+    visaLeadTime: "4 à 8 semaines",
+    intake: ["Août"],
+    work: "Travail non autorisé pour les boursiers du gouvernement.",
+    currency: "Dollar de Brunei (BND)",
+  },
+  Taïwan: {
+    livingCostXaf: 260_000,
+    housingCostXaf: 90_000,
+    housing:
+      "Dortoirs universitaires largement disponibles et peu coûteux, souvent réservés aux boursiers internationaux.",
+    visa: "Visa résident déposé au bureau de représentation de Taipei compétent, puis carte de résidence à l'arrivée.",
+    visaLeadTime: "4 à 8 semaines",
+    intake: ["Septembre", "Février"],
+    work: "16 heures par semaine avec un permis de travail, sauf clause contraire de la bourse.",
+    currency: "Dollar de Taïwan (TWD)",
+  },
+  "Hong Kong": {
+    livingCostXaf: 450_000,
+    housingCostXaf: 400_000,
+    housing:
+      "Le poste le plus lourd du budget. Les logements de campus sont limités et attribués par ancienneté ; le marché privé est l'un des plus chers au monde.",
+    visa: "Visa étudiant parrainé par l'université, déposé auprès du département de l'immigration.",
+    visaLeadTime: "6 à 10 semaines",
+    intake: ["Septembre", "Janvier"],
+    work: "Stages et travail sur le campus autorisés sous conditions, 20 heures par semaine.",
+    currency: "Dollar de Hong Kong (HKD)",
+  },
+  Indonésie: {
+    livingCostXaf: 170_000,
+    housingCostXaf: 70_000,
+    housing:
+      "Logement étudiant local (kos) très abordable, souvent à proximité immédiate du campus.",
+    visa: "Visa étudiant délivré sur lettre de parrainage de l'université et approbation du ministère.",
+    visaLeadTime: "6 à 10 semaines",
+    intake: ["Septembre"],
+    work: "Travail non autorisé avec un visa étudiant.",
+    currency: "Roupie indonésienne (IDR)",
+  },
+  "Arabie saoudite": {
+    livingCostXaf: 300_000,
+    housingCostXaf: 0,
+    housing:
+      "Logement fourni sur le campus pour les boursiers, meublé et desservi par des navettes.",
+    visa: "Visa d'études parrainé par l'université, avec examen médical préalable obligatoire.",
+    visaLeadTime: "6 à 10 semaines",
+    intake: ["Septembre", "Janvier"],
+    work: "Travail limité au campus, sous condition d'accord de l'université.",
+    currency: "Riyal saoudien (SAR)",
+  },
+  Qatar: {
+    livingCostXaf: 400_000,
+    housingCostXaf: 0,
+    housing:
+      "Logement en résidence fourni aux boursiers complets dans la cité de l'éducation de Doha.",
+    visa: "Visa de résidence étudiante parrainé par l'université, avec examen médical à l'arrivée.",
+    visaLeadTime: "6 à 10 semaines",
+    intake: ["Août", "Janvier"],
+    work: "Travail sur le campus autorisé avec l'accord du parrain.",
+    currency: "Riyal qatari (QAR)",
+  },
+  Brésil: {
+    livingCostXaf: 260_000,
+    housingCostXaf: 120_000,
+    housing:
+      "Résidences universitaires publiques réservées en priorité aux étudiants à faibles revenus ; sinon colocation (república).",
+    visa: "Visa temporaire IV pour études, déposé au consulat du Brésil avec la lettre d'acceptation PEC-G.",
+    visaLeadTime: "6 à 10 semaines",
+    intake: ["Mars", "Août"],
+    work: "Travail interdit aux étudiants du programme PEC-G, qui doivent prouver leurs ressources.",
+    currency: "Real brésilien (BRL)",
+  },
+  Australie: {
+    livingCostXaf: 620_000,
+    housingCostXaf: 400_000,
+    housing:
+      "Colocation ou résidence privée. Sydney et Melbourne sont nettement plus chères qu'Adélaïde ou Brisbane.",
+    visa: "Visa étudiant sous-classe 500, avec assurance santé OSHC obligatoire pour toute la durée du séjour.",
+    visaLeadTime: "6 à 12 semaines",
+    intake: ["Février", "Juillet"],
+    work: "48 heures par quinzaine pendant les cours, sans limite pendant les vacances.",
+    currency: "Dollar australien (AUD)",
+  },
+  "Nouvelle-Zélande": {
+    livingCostXaf: 540_000,
+    housingCostXaf: 340_000,
+    housing:
+      "Résidences universitaires la première année, puis colocation (flatting), qui est la norme locale.",
+    visa: "Visa étudiant délivré en ligne, avec assurance santé et preuve de ressources exigées.",
+    visaLeadTime: "6 à 10 semaines",
+    intake: ["Février", "Juillet"],
+    work: "20 heures par semaine pendant les cours, temps plein pendant les vacances.",
+    currency: "Dollar néo-zélandais (NZD)",
+  },
 };
 
 export const DEFAULT_COUNTRY_PROFILE: CountryProfile = {

@@ -1,3 +1,4 @@
+import { NB_PROGRAMMES } from "@/data/stats";
 import type { Metadata } from "next";
 import { CatalogBrowser } from "@/components/destination/catalog-browser";
 import { Footer } from "@/components/site/footer";
@@ -8,7 +9,7 @@ import { CATALOG, COUNTRIES_IN_CATALOG } from "@/data/catalog";
 export const metadata: Metadata = {
   title: "Catalogue des bourses et universités",
   description:
-    "Les 50 programmes internationaux référencés par Travis : financement, seuils de moyenne, échéances et procédure complète pour chacun.",
+    `Les ${NB_PROGRAMMES} programmes internationaux référencés par Travis : financement, seuils de moyenne, échéances et procédure complète pour chacun.`,
 };
 
 export default function CatalogPage() {

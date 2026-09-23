@@ -24,8 +24,9 @@ export function CatalogBrowser() {
   /**
    * Nombre de fiches rendues.
    *
-   * Les 50 programmes d'un coup, c'est 50 images à décoder et 22 écrans de
-   * hauteur : la plus grande image visible mettait 3,5 s à s'afficher sur un
+   * Tout le catalogue d'un coup, c'est une image à décoder par fiche et
+   * des dizaines d'écrans de hauteur : la plus grande image visible mettait
+   * 3,5 s à s'afficher sur un
    * mobile d'entrée de gamme en 3G — le public exact de ce produit. On rend
    * ce qu'un visiteur parcourt réellement avant de filtrer, et il demande la
    * suite s'il la veut.

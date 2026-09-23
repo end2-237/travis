@@ -1,41 +1,28 @@
-import type { ProgramKind } from "@/data/procedure";
+import { PROGRAMS_AFRIQUE_OCEANIE } from "./programs/afrique-oceanie.ts";
+import { PROGRAMS_AMERIQUES } from "./programs/ameriques.ts";
+import { PROGRAMS_ASIE } from "./programs/asie.ts";
+import { PROGRAMS_EUROPE } from "./programs/europe.ts";
+import type { ProgramSpec } from "./programs/types.ts";
+
+export type { ProgramSpec } from "./programs/types.ts";
 
 /**
- * Catalogue des 50 programmes — source de vérité du contenu.
- * `supabase/seed.sql` en est généré par `scripts/generate-seed.mjs`,
- * de sorte que la base et le mode démonstration ne divergent jamais.
+ * Catalogue des programmes — source de vérité du contenu.
+ *
+ * `supabase/seed.sql` en est généré par `scripts/generate-seed.mjs`, de sorte
+ * que la base et le mode démonstration ne divergent jamais.
+ *
+ * Le catalogue est réparti par région depuis qu'il a dépassé la centaine
+ * d'entrées : un seul fichier de trois mille lignes ne se relit plus, et
+ * c'est précisément la relecture qui garantit qu'aucune information n'est
+ * inventée ici. Les cinquante fiches fondatrices restent dans ce fichier.
  *
  * Les sites officiels pointent vers la racine du programme ou de
  * l'établissement, jamais vers une URL d'appel à candidatures : ces
  * dernières changent à chaque session et deviendraient vite mortes.
  */
-export interface ProgramSpec {
-  slug: string;
-  kind: ProgramKind;
-  title: string;
-  country: string;
-  institution: string;
-  degree_levels: string[];
-  eligible_fields: string[];
-  min_gpa_20: number;
-  max_age: number | null;
-  funding_coverage: string;
-  deadline_month: string;
-  language_requirements: string;
-  annual_cost_xaf: number;
-  fully_funded: boolean;
-  official_website: string;
-  /** Allocation mensuelle versée au boursier, si le programme en prévoit une. */
-  monthly_allowance: string | null;
-  tuition_note: string;
-  covers: string[];
-  not_covered: string[];
-  selection: string;
-  summary: string;
-  image: string;
-}
+const PROGRAMS_FONDATEURS: ProgramSpec[] = [
 
-export const PROGRAMS: ProgramSpec[] = [
   {
     slug: "turkiye-burslari",
     kind: "gouvernementale",
@@ -1236,4 +1223,18 @@ export const PROGRAMS: ProgramSpec[] = [
     summary: "Abu Dhabi University ouvre sur le marché du Golfe. Attention : même avec 100 % de réduction, le coût de la vie aux Émirats reste très élevé.",
     image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=75",
   }
+];
+
+/**
+ * Le catalogue complet, dans l'ordre : les fondateurs, puis les régions.
+ *
+ * Le moteur trie de toute façon par pertinence — cet ordre ne détermine que
+ * l'apparence du catalogue brut, jamais ce qu'un candidat voit en premier.
+ */
+export const PROGRAMS: ProgramSpec[] = [
+  ...PROGRAMS_FONDATEURS,
+  ...PROGRAMS_EUROPE,
+  ...PROGRAMS_ASIE,
+  ...PROGRAMS_AMERIQUES,
+  ...PROGRAMS_AFRIQUE_OCEANIE,
 ];

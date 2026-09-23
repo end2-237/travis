@@ -1,3 +1,4 @@
+import { NB_PROGRAMMES } from "@/data/stats";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -49,7 +50,7 @@ export const dynamic = "force-dynamic";
 const STEPS = [
   {
     title: "Vous évaluez votre profil",
-    body: "Trois écrans, gratuits. Le moteur confronte votre moyenne, votre filière et votre budget aux 50 programmes du catalogue, et vous dit où vous passez.",
+    body: `Trois écrans, gratuits. Le moteur confronte votre moyenne, votre filière et votre budget aux ${NB_PROGRAMMES} programmes du catalogue, et vous dit où vous passez.`,
   },
   {
     title: "Vous choisissez une destination",

@@ -1,3 +1,4 @@
+import { NB_PROGRAMMES } from "@/data/stats";
 import type { MetadataRoute } from "next";
 
 /**
@@ -12,7 +13,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Travis — bourses et orientation internationale",
     short_name: "Travis",
     description:
-      "Évaluez gratuitement votre admissibilité sur 50 bourses et universités, puis emportez votre feuille de route.",
+      `Évaluez gratuitement votre admissibilité sur ${NB_PROGRAMMES} bourses et universités, puis emportez votre feuille de route.`,
     start_url: "/",
     display: "standalone",
     background_color: "#f4f4f2",

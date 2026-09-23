@@ -58,7 +58,7 @@ démontrable sans aucune infrastructure. Dès que `NEXT_PUBLIC_SUPABASE_URL` et
 ```bash
 # Via la CLI Supabase
 supabase db push                                       # migrations
-psql "$DATABASE_URL" -f supabase/seed.sql              # 50 programmes
+psql "$DATABASE_URL" -f supabase/seed.sql              # tout le catalogue
 psql "$DATABASE_URL" -f supabase/seed-partners.sql     # emplacements partenaires
 ```
 
@@ -121,7 +121,7 @@ pg_dump "$DATABASE_URL" --schema=travis --no-owner > travis.sql
 
 ### Le catalogue
 
-`src/data/programs.ts` est la source de vérité du contenu : 50 programmes,
+`src/data/programs.ts` est la source de vérité du contenu : le catalogue complet,
 chacun avec son site officiel vérifié, ce que la bourse couvre, ce qu'elle
 laisse à charge, et son mode de sélection. `src/data/countries.ts` porte les
 faits partagés par destination (visa, logement, coût de la vie, rentrées),
@@ -172,8 +172,11 @@ supabase
 
 `targetDegrees` est déduit du dernier diplôme obtenu : un titulaire de Licence
 vise un Master tout en restant éligible aux programmes de Licence. Le score de
-compatibilité combine marge de moyenne (45 pts), budget (30), pays visé (15) et
-financement intégral (10).
+compatibilité combine financement intégral (38 pts contre 12), reste à charge
+tenable (25 contre 8), marge de moyenne (0 à 22) et destination demandée (15
+contre 4). L'écart de financement dépasse strictement l'amplitude de la marge
+de moyenne : une scolarité payante ne peut donc pas passer devant une bourse
+intégrale à laquelle le candidat est éligible.
 
 ### Pages partenaires
 

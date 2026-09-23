@@ -30,7 +30,7 @@ export default function HomePage() {
       <Achievements />
 
       {/* Respiration sombre au milieu d'une page claire : le chiffre annoncé
-          juste au-dessus — 29 destinations — défile ici sous forme de noms. */}
+          juste au-dessus défile ici sous forme de noms. */}
       <Grain
         soft
         className="mesh mt-14 overflow-hidden md:mt-20"

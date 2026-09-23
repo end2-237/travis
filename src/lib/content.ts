@@ -4,6 +4,12 @@
  * seules les données métier sont propres à Travis.
  */
 
+import {
+  NB_DESTINATIONS,
+  NB_INTEGRALES,
+  NB_PROGRAMMES,
+} from "@/data/stats";
+
 export const NAV_LINKS = [
   { label: "Accueil", href: "/" },
   { label: "À propos", href: "#a-propos" },
@@ -57,13 +63,20 @@ export const IMG = {
   },
 } as const;
 
-/** Section « Our Achievements » — 4 tuiles, la 3ᵉ mise en avant. */
+/**
+ * Section « Our Achievements » — 4 tuiles, la 3ᵉ mise en avant.
+ *
+ * Trois des quatre valeurs sont comptées dans le catalogue au moment du
+ * build. Recopier « 50 » à la main était commode tant que le catalogue en
+ * comptait 50 ; le jour où il en a compté 105, la page d'accueil s'est mise
+ * à mentir sans que personne ne soit prévenu.
+ */
 export const ACHIEVEMENTS = [
-  { value: "29", label: "destinations couvertes" },
-  { value: "50", label: "programmes détaillés" },
-  { value: "31", label: "bourses à 100 %", featured: true },
+  { value: String(NB_DESTINATIONS), label: "destinations couvertes" },
+  { value: String(NB_PROGRAMMES), label: "programmes détaillés" },
+  { value: String(NB_INTEGRALES), label: "bourses à 100 %", featured: true },
   { value: "500", label: "FCFA le rapport" },
-] as const;
+];
 
 /** Section « Exclusive deals just for you! » — 2 cartes visuelles. */
 export const DEALS = [
@@ -199,7 +212,7 @@ export const ABOUT_FEATURES = [
   {
     icon: "compass" as const,
     title: "Un diagnostic chiffré, pas une promesse",
-    body: "Votre moyenne, votre filière et votre budget sont confrontés à 50 programmes réels, sources officielles à l'appui. Aucun résultat inventé.",
+    body: `Votre moyenne, votre filière et votre budget sont confrontés à ${NB_PROGRAMMES} programmes réels, sources officielles à l'appui. Aucun résultat inventé.`,
   },
   {
     icon: "headset" as const,

@@ -2,8 +2,15 @@
  * Visuel associé à chaque destination.
  *
  * Un visuel par pays, et non une rotation arbitraire : afficher le Colisée
- * sur une fiche marocaine décrédibilise l'ensemble du catalogue. Toutes les
- * URL ont été vérifiées joignables.
+ * sur une fiche marocaine décrédibilise l'ensemble du catalogue. Chaque
+ * identifiant a été **ouvert et regardé** avant d'entrer ici — c'est ainsi
+ * qu'on a découvert que l'image portée par la Hongrie montrait Prague.
+ *
+ * Quatre pays du catalogue n'ont pas de visuel attribué : Lettonie, Brunei,
+ * Taïwan et Qatar. Ils reçoivent l'image neutre de repli, qui ne représente
+ * aucun lieu. C'est délibéré : une photographie présentée comme Doha sans
+ * qu'on ait pu le vérifier est un mensonge de plus dans un produit qui n'en
+ * fait aucun. Une image neutre ne prétend rien.
  */
 const BY_COUNTRY: Record<string, string> = {
   Turquie: "photo-1541432901042-2d8bd64b4a9b",
@@ -14,7 +21,9 @@ const BY_COUNTRY: Record<string, string> = {
   France: "photo-1502602898657-3e91760cbb34",
   Chine: "photo-1508804185872-d7badad00f7d",
   "Corée du Sud": "photo-1538485399081-7191377e8241",
-  Hongrie: "photo-1541849546-216549ae216d",
+  // Le pont des Chaînes et le Parlement sur le Danube. L'identifiant
+  // précédent montrait Prague — vérifié à l'œil, corrigé.
+  Hongrie: "photo-1551867633-194f125bddfa",
   Roumanie: "photo-1584646098378-0874589d76b1",
   Pologne: "photo-1519197924294-4ba991a11128",
   Rwanda: "photo-1580060839134-75a5edca2e99",
@@ -34,6 +43,21 @@ const BY_COUNTRY: Record<string, string> = {
   Sénégal: "photo-1568454537842-d933259bb258",
   "Burkina Faso": "photo-1547471080-7cc2caa01a7e",
   "Émirats Arabes Unis": "photo-1512453979798-5ea266f8880c",
+  // ── Pays ajoutés avec le catalogue élargi ──────────────────────────
+  Tchéquie: "photo-1513805959324-96eb66ca8713",
+  Suisse: "photo-1530122037265-a5f1f91d3b99",
+  Autriche: "photo-1516550893923-42d28e5677af",
+  Irlande: "photo-1590089415225-401ed6f9db8e",
+  Espagne: "photo-1583422409516-2895a77efded",
+  Russie: "photo-1547448415-e9f5b28e570d",
+  Singapour: "photo-1525625293386-3f8f99389edd",
+  "Hong Kong": "photo-1536599018102-9f803c140fc1",
+  Indonésie: "photo-1544644181-1484b3fdfc62",
+  "Arabie saoudite": "photo-1580418827493-f2b22c0a76cb",
+  Brésil: "photo-1516306580123-e6e52b1b7b5f",
+  Australie: "photo-1506973035872-a4ec16b8e8d9",
+  "Nouvelle-Zélande": "photo-1507699622108-4be3abd695ad",
+  "États-Unis": "photo-1518235506717-e1ed3306a89b",
   "Multi-pays": "photo-1541339907198-e08756dedf3f",
 };
 

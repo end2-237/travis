@@ -4,7 +4,8 @@ import type { Scholarship } from "@/types/database";
 /**
  * Catalogue servi quand Supabase n'est pas configuré.
  * Il dérive de la même source que `supabase/seed.sql` : le mode
- * démonstration expose donc exactement les 50 programmes de production.
+ * démonstration expose donc exactement les mêmes programmes qu'en
+ * production — ni un de plus, ni un de moins.
  */
 export const FALLBACK_CATALOG: Scholarship[] = CATALOG.map((entry) => ({
   id: entry.slug,

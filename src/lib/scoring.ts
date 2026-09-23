@@ -24,8 +24,8 @@ export interface ScoringInput {
  * et 10 au financement intégral : une université privée au seuil bas
  * dépassait donc systématiquement une bourse d'État à 100 %. Un profil à
  * 14,25 voyait Istanbul Aydın (payante) devant Türkiye Bursları (intégrale)
- * — sur un site qui s'appelle « Trouvez Votre Bourse » et annonce 31
- * bourses à 100 %.
+ * — sur un site qui s'appelle « Trouvez Votre Bourse » et met en avant
+ * ses bourses à 100 %.
  *
  * Le moteur classait la facilité d'admission ; il doit classer la valeur de
  * l'offre. Tous les programmes de la liste sont déjà éligibles — la requête

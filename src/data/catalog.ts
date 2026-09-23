@@ -14,6 +14,14 @@ import { PROGRAMS, type ProgramSpec } from "@/data/programs";
  * du profil de son pays et de la procédure correspondant à son type.
  */
 export interface CatalogEntry extends ProgramSpec {
+  /**
+   * Visuel de la fiche, toujours présent.
+   *
+   * `ProgramSpec.image` est facultatif ; ici il ne l'est plus, parce que
+   * l'assemblage ci-dessous impose systématiquement l'image du pays. Une
+   * fiche du catalogue ne peut donc pas s'afficher sans visuel.
+   */
+  image: string;
   country_profile: CountryProfile;
   /** Procédure de candidature, étape par étape. */
   application_steps: string[];

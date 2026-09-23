@@ -1,3 +1,4 @@
+import { NB_PROGRAMMES } from "@/data/stats";
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Inter } from "next/font/google";
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s · Travis",
   },
   description:
-    "Évaluez gratuitement votre admissibilité sur 50 bourses et universités, consultez la procédure complète de chacune, puis emportez votre feuille de route en PDF pour 500 FCFA.",
+    `Évaluez gratuitement votre admissibilité sur ${NB_PROGRAMMES} bourses et universités, consultez la procédure complète de chacune, puis emportez votre feuille de route en PDF pour 500 FCFA.`,
   keywords: [
     "bourses d'études",
     "orientation internationale",

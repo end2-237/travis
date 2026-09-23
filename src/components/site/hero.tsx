@@ -1,3 +1,4 @@
+import { NB_PROGRAMMES } from "@/data/stats";
 import { Sparkles } from "lucide-react";
 import { Parallax } from "@/components/motion/parallax";
 import { Reveal } from "@/components/motion/reveal";
@@ -49,9 +50,10 @@ export function Hero() {
 
               <Reveal duration={850} delay={520}>
                 <p className="mt-4 max-w-[54ch] text-[13px] leading-[1.6] text-white/80 md:text-[14px]">
-                  Évaluez gratuitement votre admissibilité sur 50 bourses et
-                  universités réelles, puis consultez chaque procédure en détail
-                  — budget, échéances et liens officiels.
+                  Évaluez gratuitement votre admissibilité sur{" "}
+                  {NB_PROGRAMMES} bourses et universités réelles, puis consultez
+                  chaque procédure en détail — budget, échéances et liens
+                  officiels.
                 </p>
               </Reveal>
             </div>

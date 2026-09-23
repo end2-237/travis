@@ -1,3 +1,4 @@
+import { NB_PROGRAMMES } from "@/data/stats";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { FunnelEvent } from "@/components/analytics/page-view";
@@ -8,7 +9,7 @@ import { PageHeader } from "@/components/site/page-header";
 export const metadata: Metadata = {
   title: "Évaluation d'admissibilité",
   description:
-    "Trois écrans pour confronter votre moyenne, votre filière et votre budget aux 50 programmes du catalogue.",
+    `Trois écrans pour confronter votre moyenne, votre filière et votre budget aux ${NB_PROGRAMMES} programmes du catalogue.`,
 };
 
 export default function EvaluationPage() {

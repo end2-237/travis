@@ -1,3 +1,4 @@
+import { NB_PROGRAMMES } from "@/data/stats";
 import Link from "next/link";
 import { Compass, Search } from "lucide-react";
 import { Footer } from "@/components/site/footer";
@@ -54,7 +55,8 @@ export default function NotFound() {
                 Parcourir le catalogue
               </span>
               <span className="text-[11.5px] leading-[1.55] text-ink-muted">
-                Les 50 programmes, filtrables par filière et par destination.
+                Les {NB_PROGRAMMES} programmes, filtrables par filière et par
+                destination.
               </span>
             </Link>
           </div>
