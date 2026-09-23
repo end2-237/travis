@@ -1,13 +1,18 @@
 import { Logo } from "@/components/site/logo";
+import { BandeKente, Motif } from "@/components/site/motif";
 import Link from "next/link";
 import { FOOTER_LINKS } from "@/lib/content";
 
 /** Pied de page — wordmark géant rogné en bas, comme sur la maquette. */
 export function Footer() {
   return (
-    <footer className="mt-16 overflow-hidden md:mt-24">
+    <footer className="relative mt-16 overflow-hidden md:mt-24">
+      <Motif nom="kuba" opacite={0.045} fondu="haut" className="-z-10" />
+
+      <BandeKente />
+
       <div className="shell">
-        <div className="grid gap-8 border-t border-line pt-10 md:grid-cols-2">
+        <div className="grid gap-8 pt-10 md:grid-cols-2">
           <div>
             <Logo size="sm" />
             <p className="mt-4 max-w-[18ch] text-[20px] font-medium leading-[1.2] tracking-[-0.03em] md:text-[24px]">

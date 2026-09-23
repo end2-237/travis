@@ -28,40 +28,72 @@ export const NAV_LINKS = [
  */
 export const IMG = {
   hero: {
-    src: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=75",
-    alt: "Diplômés lançant leur toque au soleil couchant",
+    src: "https://images.unsplash.com/photo-1655720348590-c739c860beed?auto=format&fit=crop&w=1920&q=75",
+    alt: "Quatre étudiants assis sur des marches, ordinateurs portables ouverts, sur un campus",
   },
   manifesto: [
     {
-      src: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=640&q=80",
-      alt: "Étudiants au travail entre les rayonnages d'une bibliothèque",
+      src: "https://images.unsplash.com/photo-1620829813573-7c9e1877706f?auto=format&fit=crop&w=640&q=80",
+      alt: "Étudiant travaillant sur un ordinateur portable",
     },
     {
-      src: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=640&q=80",
-      alt: "Amphithéâtre pendant un cours",
+      src: "https://images.unsplash.com/photo-1645263012710-35e2fc89cb5c?auto=format&fit=crop&w=640&q=80",
+      alt: "Groupe de diplômés en toge riant ensemble",
     },
     {
-      src: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=640&q=80",
-      alt: "Groupe d'étudiants internationaux en extérieur",
+      src: "https://images.unsplash.com/photo-1765650114546-83a73ec9d461?auto=format&fit=crop&w=640&q=80",
+      alt: "Étudiante lisant un classeur sur un banc",
     },
   ],
   deals: [
-    "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1686213011624-8578b598ef0f?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1692883702706-a50fc21da44f?auto=format&fit=crop&w=1400&q=80",
   ],
   about: {
-    src: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1400&q=80",
-    alt: "Chambre en résidence étudiante",
-  },
-  video: {
-    src: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=75",
-    alt: "Groupe d'étudiants en séance de travail autour d'une table",
+    src: "https://images.unsplash.com/photo-1648301033733-44554c74ec50?auto=format&fit=crop&w=1400&q=80",
+    alt: "Groupe d'étudiants accoudés à la balustrade d'un bâtiment universitaire",
   },
   banner: {
-    src: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1920&q=75",
-    alt: "Vallée de montagne au lever du jour",
+    src: "https://images.unsplash.com/photo-1594750852517-f37738fa2384?auto=format&fit=crop&w=1920&q=75",
+    alt: "Deux diplômés en toge brandissant leur toque sur une allée de campus",
   },
 } as const;
+
+/**
+ * Diaporama du haut de la section « bourses ».
+ *
+ * Ces photographies sont illustratives et ne représentent pas des candidats
+ * accompagnés par Travis : le texte alternatif décrit donc ce qu'on y voit,
+ * sans jamais suggérer qu'il s'agit de boursiers du service. Toutes ont été
+ * ouvertes et regardées avant d'entrer ici.
+ */
+export const DIAPOS_BOURSES = [
+  {
+    src: "https://images.unsplash.com/photo-1680265254066-b2b65e1e95ca?auto=format&fit=crop&w=1200&q=78",
+    alt: "Diplômé en toge devant une fontaine de campus",
+    legende: "Une bourse intégrale couvre la scolarité, le logement et le vol.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1738949538500-54647382e038?auto=format&fit=crop&w=1200&q=78",
+    alt: "Groupe de diplômés en toge avant une cérémonie",
+    legende: "Les sessions s'ouvrent entre septembre et mars selon le pays.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1765650114551-1cc2b1873e92?auto=format&fit=crop&w=1200&q=78",
+    alt: "Étudiante consultant un classeur, à l'extérieur",
+    legende: "Chaque fiche renvoie au site officiel du programme.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1736613335049-7aaa94a92a33?auto=format&fit=crop&w=1200&q=78",
+    alt: "Diplômé traversant la scène lors d'une remise de diplômes",
+    legende: "Le reste à charge annuel est affiché avant toute candidature.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1604933762021-54a5858c9832?auto=format&fit=crop&w=1200&q=78",
+    alt: "Étudiante travaillant sur un ordinateur portable à son bureau",
+    legende: "L'évaluation se fait en trois étapes, sans créer de compte.",
+  },
+] as const;
 
 /**
  * Section « Our Achievements » — 4 tuiles, la 3ᵉ mise en avant.
@@ -221,31 +253,66 @@ export const ABOUT_FEATURES = [
   },
 ] as const;
 
-/** Section « What our customer says ». */
-export const TESTIMONIALS = [
+/**
+ * Diaporama de la section « exemples de lecture ».
+ *
+ * Même règle que ci-dessus : des scènes de travail et de révision, décrites
+ * pour ce qu'elles sont. Aucune ne prétend montrer un utilisateur du service.
+ */
+export const DIAPOS_PARCOURS = [
   {
-    title: "Admise à Rome après deux refus",
-    body: "Le rapport a montré que je visais des programmes hors de portée avec ma moyenne. En repositionnant mon dossier sur trois universités compatibles, j'ai reçu deux réponses positives.",
-    name: "Aïcha Nkoulou",
-    role: "Master Informatique — Italie",
-    avatar:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
+    src: "https://images.unsplash.com/photo-1610473068514-276d33c606dd?auto=format&fit=crop&w=1200&q=78",
+    alt: "Étudiante travaillant à un bureau devant un ordinateur portable",
+    legende: "Trois étapes : le profil, le budget, la destination visée.",
   },
   {
-    title: "Le calendrier m'a évité de rater la session",
-    body: "La checklist documentaire listait la légalisation et la traduction assermentée avec les bons référents. J'ai déposé mon dossier trois semaines avant la clôture.",
-    name: "Steve Mbarga",
-    role: "Licence Génie Civil — Turquie",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+    src: "https://images.unsplash.com/photo-1647942678807-453cd34b98a7?auto=format&fit=crop&w=1200&q=78",
+    alt: "Étudiant lisant un livre à une table",
+    legende: "Le moteur compare votre moyenne au seuil réel de chaque programme.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1765650114188-104862097861?auto=format&fit=crop&w=1200&q=78",
+    alt: "Étudiante annotant un carnet dans un café",
+    legende: "Le rapport détaille le calendrier mois par mois.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1612299273045-362a39972259?auto=format&fit=crop&w=1200&q=78",
+    alt: "Étudiant souriant devant un ordinateur portable",
+    legende: "Chaque source officielle est citée et cliquable.",
   },
 ] as const;
 
-export const VIDEO_QUOTE = {
-  quote: "Travis a transformé ma moyenne en stratégie de candidature.",
-  name: "Michael Thompson",
-  role: "Conseiller en orientation internationale",
-} as const;
+/**
+ * Section « Ce que le rapport dit » — exemples de lecture.
+ *
+ * Ce bloc portait auparavant deux témoignages signés d'un prénom, d'un nom,
+ * d'une photo et de cinq étoiles. Aucun de ces étudiants n'existe : le
+ * service n'a pas encore de promotion derrière lui. Sur un produit dont
+ * l'argument principal est « aucun résultat inventé », inventer sa propre
+ * clientèle était la seule ligne du site qu'on ne pouvait pas tenir.
+ *
+ * Ce sont donc des cas de lecture, présentés comme tels. Chacun décrit un
+ * profil et ce que le moteur en fait — pas un client satisfait. Le jour où
+ * de vrais retours existeront, ils prendront cette place avec un vrai nom
+ * et un vrai accord.
+ */
+export const EXEMPLES_LECTURE = [
+  {
+    profil: "Moyenne 12,4 · Génie civil · budget nul",
+    titre: "Écarter ce qui est hors de portée",
+    body: "Une moyenne de 12,4 ferme la porte des programmes qui exigent 14. Le rapport les retire de la liste au lieu de les afficher comme des espoirs, et concentre le dossier sur les bourses dont le seuil est réellement franchi.",
+  },
+  {
+    profil: "Licence obtenue · vise un Master · Europe",
+    titre: "Deux niveaux ouverts, pas un",
+    body: "Un titulaire de Licence reste éligible aux programmes de Licence tout en visant le Master. Les deux niveaux sont interrogés, parce qu'une réorientation coûte moins cher qu'une année perdue.",
+  },
+  {
+    profil: "Budget 400 000 FCFA par an",
+    titre: "Le reste à charge affiché avant le dépôt",
+    body: "Chaque fiche porte le coût annuel restant, logement et vie courante compris. Un programme « gratuit » dont le séjour coûte 2 millions par an n'est pas gratuit, et le rapport le dit dans ces termes.",
+  },
+] as const;
 
 export const FOOTER_LINKS = [
   { label: "Accueil", href: "/" },

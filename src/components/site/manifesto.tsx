@@ -1,5 +1,6 @@
 import { Reveal } from "@/components/motion/reveal";
 import { ScrollWords } from "@/components/motion/split-words";
+import { Motif } from "@/components/site/motif";
 import { Photo } from "@/components/site/photo";
 import { IMG } from "@/lib/content";
 
@@ -9,7 +10,9 @@ import { IMG } from "@/lib/content";
  */
 export function Manifesto() {
   return (
-    <section id="a-propos" className="shell pt-16 md:pt-24">
+    <section id="a-propos" className="shell relative pt-16 md:pt-24">
+      <Motif nom="adinkra" opacite={0.06} fondu="radial" className="-z-10" />
+
       <Reveal className="flex justify-center">
         <span className="eyebrow">Qui sommes-nous ?</span>
       </Reveal>

@@ -86,6 +86,16 @@ export function relatedEntries(entry: CatalogEntry, limit = 3): CatalogEntry[] {
   return [...sameCountry, ...sameField].slice(0, limit);
 }
 
+/**
+ * Valeurs distinctes de la colonne « pays », pour le filtre du catalogue.
+ *
+ * « Multi-pays » y figure — c'est une valeur de filtre légitime, celle des
+ * consortiums qui répartissent leurs boursiers entre plusieurs États. Ce
+ * n'est en revanche pas une destination : pour *compter* les destinations,
+ * c'est `NB_DESTINATIONS` (`data/stats.ts`) qui fait foi, et qui l'exclut.
+ * Les deux chiffres ont divergé d'une unité entre l'accueil et le catalogue
+ * précisément parce que cette liste servait aussi de compteur.
+ */
 export const COUNTRIES_IN_CATALOG = [
   ...new Set(CATALOG.map((e) => e.country)),
 ].sort((a, b) => a.localeCompare(b, "fr"));

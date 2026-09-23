@@ -1,12 +1,43 @@
-import { NB_PROGRAMMES } from "@/data/stats";
 import { Sparkles } from "lucide-react";
 import { Parallax } from "@/components/motion/parallax";
 import { Reveal } from "@/components/motion/reveal";
 import { WordRise } from "@/components/motion/split-words";
+import { Motif } from "@/components/site/motif";
 import { Photo } from "@/components/site/photo";
+import { PhotoRail } from "@/components/site/photo-rail";
 import { Navbar } from "@/components/site/navbar";
 import { QuickCheckCard } from "@/components/site/quick-check-card";
+import { CATALOG } from "@/data/catalog";
+import { NB_DESTINATIONS, NB_PROGRAMMES } from "@/data/stats";
 import { IMG } from "@/lib/content";
+
+/**
+ * Photos du bandeau défilant du héros.
+ *
+ * Ce sont les visuels de destination du catalogue, pas des images
+ * d'ambiance : chacun a été ouvert et vérifié dans `data/images.ts`, et
+ * correspond au pays qu'il annonce. Le bandeau montre donc réellement où
+ * mènent les programmes, au lieu de meubler le bas de la bannière.
+ *
+ * Les consortiums multi-pays et les destinations sans visuel vérifié sont
+ * écartés : un bandeau de vingt vignettes dont quatre montrent la même image
+ * neutre se lit comme une erreur d'affichage.
+ */
+const VIGNETTES = (() => {
+  const vues = new Map<string, string>();
+  for (const entree of CATALOG) {
+    if (entree.country === "Multi-pays" || vues.has(entree.country)) continue;
+    vues.set(entree.country, entree.image);
+  }
+  const uniques = new Map<string, { src: string; alt: string }>();
+  for (const [pays, src] of vues) {
+    // Deux pays peuvent partager un visuel de repli : on ne garde que le
+    // premier, sinon la même vignette revient plusieurs fois dans la boucle.
+    if (uniques.has(src)) continue;
+    uniques.set(src, { src, alt: pays });
+  }
+  return [...uniques.values()].slice(0, 16);
+})();
 
 export function Hero() {
   return (
@@ -26,10 +57,20 @@ export function Hero() {
           />
         </Parallax>
 
+        {/* Dédale kuba en lumière douce : il n'assombrit rien, il donne au
+            voile une trame au lieu d'un aplat noir. */}
+        <Motif
+          nom="dedale"
+          opacite={0.1}
+          fondu="haut"
+          className="mix-blend-soft-light"
+        />
+
         <Navbar />
 
-        {/* Bloc éditorial + carte d'évaluation, alignés sur la ligne de base */}
-        <div className="relative z-10 flex min-h-[560px] items-end px-5 pb-8 pt-24 md:min-h-[700px] md:px-10 md:pb-10 lg:h-full lg:px-14 lg:pb-14">
+        {/* Bloc éditorial + carte d'évaluation, alignés sur la ligne de base.
+            Le bas est dégagé pour le bandeau de destinations. */}
+        <div className="relative z-10 flex min-h-[560px] items-end px-5 pb-[136px] pt-24 md:min-h-[700px] md:px-10 md:pb-[168px] lg:h-full lg:px-14">
           <div className="grid w-full grid-cols-1 items-end gap-8 lg:grid-cols-12 lg:gap-10">
             <div className="lg:col-span-6">
               <Reveal duration={850}>
@@ -69,12 +110,27 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Repère de défilement — la scène occupe tout l'écran, il faut dire
-            qu'elle continue en dessous. */}
-        <span
-          aria-hidden
-          className="scroll-hint pointer-events-none absolute bottom-5 left-1/2 hidden h-8 w-5 -translate-x-1/2 rounded-full border border-white/35 text-white/70 lg:block"
-        />
+        {/* Bandeau des destinations, en bas de la scène. Il occupe la bande
+            que le voile laissait vide et dit, en images, ce que la phrase
+            au-dessus annonce en chiffres. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10">
+          <div
+            aria-hidden
+            className="h-20 bg-gradient-to-t from-black/45 to-transparent"
+          />
+          <div className="bg-gradient-to-t from-black/45 to-black/25 pb-3.5 pt-1 backdrop-blur-[2px]">
+            <p className="shell mb-2 text-[10.5px] font-medium uppercase tracking-[0.14em] text-white/70">
+              {NB_DESTINATIONS} destinations couvertes
+            </p>
+            <PhotoRail
+              photos={VIGNETTES}
+              durationSeconds={64}
+              hauteur="h-[62px] md:h-[76px]"
+              largeur="w-[102px] md:w-[124px]"
+              className="[mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)]"
+            />
+          </div>
+        </div>
       </div>
     </header>
   );

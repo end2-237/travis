@@ -1,5 +1,6 @@
 import "server-only";
 import { SERVICES, type ServiceKind, type ServiceProvider } from "@/data/services";
+import { NB_DESTINATIONS } from "@/data/stats";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase/admin";
 
 /**
@@ -69,7 +70,7 @@ export async function getPartnerReach(): Promise<{
   const services = SERVICES.filter((s) => s.nature === "institution").length;
 
   if (!isSupabaseConfigured()) {
-    return { evaluations: 0, countries: 29, services, demo: true };
+    return { evaluations: 0, countries: NB_DESTINATIONS, services, demo: true };
   }
 
   const since = new Date();
@@ -82,7 +83,9 @@ export async function getPartnerReach(): Promise<{
 
   return {
     evaluations: count ?? 0,
-    countries: 29,
+    // Compté dans le catalogue, pas recopié : la valeur était restée figée
+    // à 29 depuis l'époque où le catalogue couvrait 29 destinations.
+    countries: NB_DESTINATIONS,
     services,
     demo: false,
   };

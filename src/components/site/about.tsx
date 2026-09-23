@@ -1,5 +1,6 @@
 import { ArrowUpRight, Compass, Headset, TrendingUp } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
+import { Motif } from "@/components/site/motif";
 import { Photo } from "@/components/site/photo";
 import { ABOUT_FEATURES, IMG } from "@/lib/content";
 
@@ -11,7 +12,9 @@ const ICONS = { compass: Compass, headset: Headset } as const;
  */
 export function About() {
   return (
-    <section className="shell pt-16 md:pt-24">
+    <section className="shell relative pt-16 md:pt-24">
+      <Motif nom="kuba" opacite={0.07} fondu="bords" className="-z-10" />
+
       <Reveal>
         <span className="eyebrow">À propos</span>
       </Reveal>

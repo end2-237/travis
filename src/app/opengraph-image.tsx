@@ -1,4 +1,9 @@
 import { ImageResponse } from "next/og";
+import {
+  NB_DESTINATIONS,
+  NB_INTEGRALES,
+  NB_PROGRAMMES,
+} from "@/data/stats";
 
 /**
  * Image de partage.
@@ -16,7 +21,6 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function Image() {
-  const { CATALOG } = await import("@/data/catalog");
   const { readFile } = await import("node:fs/promises");
   const { join } = await import("node:path");
 
@@ -25,9 +29,12 @@ export default async function Image() {
       join(process.cwd(), "public", "brand", "travis-logo-blanc.png"),
     )
   ).toString("base64")}`;
-  const total = CATALOG.length;
-  const integrales = CATALOG.filter((e) => e.fully_funded).length;
-  const pays = new Set(CATALOG.map((e) => e.country)).size;
+  // Les trois chiffres sortent de `data/stats.ts`, comme partout ailleurs :
+  // recomptés ici, ils incluaient « Multi-pays » et annonçaient donc une
+  // destination de plus que la page d'accueil.
+  const total = NB_PROGRAMMES;
+  const integrales = NB_INTEGRALES;
+  const pays = NB_DESTINATIONS;
 
   return new ImageResponse(
     (

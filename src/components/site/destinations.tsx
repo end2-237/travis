@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowUpRight, CalendarDays, GraduationCap, Wallet } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
+import { Motif } from "@/components/site/motif";
 import { Photo } from "@/components/site/photo";
 import { CATALOG } from "@/data/catalog";
 import { FIELD_FILTERS } from "@/lib/content";
@@ -37,7 +38,9 @@ export function Destinations() {
   }, [active]);
 
   return (
-    <section id="destinations" className="shell pt-16 md:pt-24">
+    <section id="destinations" className="shell relative pt-16 md:pt-24">
+      <Motif nom="kuba" opacite={0.05} fondu="haut" className="-z-10" />
+
       <Reveal>
         <span className="eyebrow">Où étudier ?</span>
 

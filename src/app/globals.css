@@ -679,6 +679,157 @@
   user-select: none;
 }
 
+/* ------------------------------------------------------------------
+   Afritude — motifs de fond
+
+   Quatre familles textiles ouest- et centre-africaines, redessinées en SVG
+   inline plutôt que téléchargées : un motif pèse ici entre 300 et 700
+   octets, se répète sans perte à n'importe quelle densité d'écran, et suit
+   la couleur du thème. Une tuile PNG équivalente coûterait 20 à 60 ko et
+   baverait sur les écrans à forte densité — le public vise des forfaits
+   data comptés au mégaoctet.
+
+   Ils sont posés en couche séparée (`.motif`), jamais sur l'élément qui
+   porte le texte : l'opacité du fond ne peut donc pas entamer le contraste
+   d'un titre ou d'un prix.
+------------------------------------------------------------------- */
+
+@theme {
+  /*
+   * Palette afritude.
+   * Terre cuite, ocre, lagune et argile encadrent le noir et le bleu de
+   * marque sans les concurrencer : elles n'habillent que des fonds et des
+   * filets, jamais du texte courant.
+   */
+  --color-terre: #c2502e;
+  --color-ocre: #e0a032;
+  --color-lagune: #2a8c87;
+  --color-argile: #8c3b2e;
+  --color-sable: #f4e9d8;
+}
+
+/*
+ * Couche de motif.
+ * `inset: 0` + `pointer-events: none` : elle ne capte pas le clic et ne
+ * participe pas au flux. Le parent doit être positionné.
+ */
+.motif {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+
+/*
+ * Semis — grain discret pour les grandes surfaces claires.
+ * C'est celui du fond de page : à 16 % d'opacité il ne se voit pas, il se
+ * ressent. Un aplat de couleur unie sur 6 000 px de haut est ce qui donne
+ * à une page l'air d'être vide ; ce semis le corrige sans rien ajouter à
+ * lire.
+ */
+.motif-semis {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23101010' stroke-width='1.4' opacity='.16'%3E%3Cpath d='M12 10v6M9 13h6'/%3E%3Ccircle cx='52' cy='20' r='3.5'/%3E%3Cpath d='M28 46l5-5 5 5-5 5z'/%3E%3Cpath d='M58 56h8M62 52v8'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 72px 72px;
+}
+
+/*
+ * Dédale — méandre anguleux à trait épais, de la famille des tissus kuba
+ * (Kasaï). Réservé aux fonds sombres, où son ocre porte sans éblouir.
+ */
+.motif-dedale {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23e0a032' stroke-width='5' stroke-linecap='square'%3E%3Cpath d='M10 0v20h20v20H10v20h20v20'/%3E%3Cpath d='M50 80V60h20V40H50V20h20V0'/%3E%3Cpath d='M30 10h20'/%3E%3Cpath d='M30 70h20'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+/*
+ * Adinkra — symboles akan espacés.
+ * Adinkrahene (les trois cercles concentriques, l'autorité, le charisme) et
+ * Nkyinkyim (la ligne brisée, l'adaptabilité) sont repris tels qu'ils se
+ * dessinent ; le losange est un motif géométrique et ne prétend pas être un
+ * symbole nommé. Un signe adinkra porte un sens précis : en inventer un
+ * serait le même genre de mensonge décoratif qu'une photo mal légendée.
+ */
+.motif-adinkra {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%23101010' stroke-width='2.2'%3E%3Ccircle cx='34' cy='34' r='6'/%3E%3Ccircle cx='34' cy='34' r='11.5'/%3E%3Ccircle cx='34' cy='34' r='17'/%3E%3Cpath d='M104 22v10h12v10h12v10h12'/%3E%3Cpath d='M30 104h16l8-10 8 10h16'/%3E%3Crect x='104' y='104' width='24' height='24' transform='rotate(45 116 116)'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* Variante claire du même semis adinkra, pour les fonds sombres. */
+.motif-adinkra-clair {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%23f4e9d8' stroke-width='2.2'%3E%3Ccircle cx='34' cy='34' r='6'/%3E%3Ccircle cx='34' cy='34' r='11.5'/%3E%3Ccircle cx='34' cy='34' r='17'/%3E%3Cpath d='M104 22v10h12v10h12v10h12'/%3E%3Cpath d='M30 104h16l8-10 8 10h16'/%3E%3Crect x='104' y='104' width='24' height='24' transform='rotate(45 116 116)'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* Kuba — résille de losanges, trait fin : fonds clairs, cartes, encarts. */
+.motif-kuba {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%238c3b2e' stroke-width='1.6'%3E%3Cpath d='M24 2 46 24 24 46 2 24z'/%3E%3Cpath d='M24 12 36 24 24 36 12 24z'/%3E%3Cpath d='M0 0 6 6M42 42l6 6M48 0l-6 6M6 42 0 48'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 48px 48px;
+}
+
+/* Bogolan — marques du bogolanfini malien, sable sur terre. */
+.motif-bogolan {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='%23f4e9d8'%3E%3Crect x='6' y='6' width='14' height='4'/%3E%3Crect x='6' y='14' width='8' height='4'/%3E%3Crect x='38' y='6' width='4' height='14'/%3E%3Crect x='46' y='6' width='4' height='8'/%3E%3Ccircle cx='54' cy='40' r='3'/%3E%3Cpath d='M6 40h4v4H6zM14 44h4v4h-4zM22 40h4v4h-4z'/%3E%3Cpath d='M34 52h20v3H34z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 64px 64px;
+}
+
+/*
+ * Bande kente.
+ * Un filet tissé de 14 px qui remplace la ligne de séparation grise entre
+ * deux sections. La tuile contient une trame complète — chevrons ocre,
+ * blocs alternés terre et sable, lisière lagune — pour que la bande se lise
+ * comme un tissage et non comme une frise répétée.
+ */
+.bande-kente {
+  height: 14px;
+  background-color: var(--color-ink);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='14' viewBox='0 0 120 14'%3E%3Crect width='120' height='14' fill='%23101010'/%3E%3Crect width='120' height='2.5' fill='%23e0a032'/%3E%3Crect y='11.5' width='120' height='2.5' fill='%232a8c87'/%3E%3Cg fill='%23c2502e'%3E%3Crect x='0' y='4' width='14' height='6'/%3E%3Crect x='30' y='4' width='14' height='6'/%3E%3Crect x='60' y='4' width='14' height='6'/%3E%3Crect x='90' y='4' width='14' height='6'/%3E%3C/g%3E%3Cg fill='%23f4e9d8'%3E%3Crect x='16' y='4' width='12' height='6'/%3E%3Crect x='46' y='4' width='12' height='6'/%3E%3Crect x='76' y='4' width='12' height='6'/%3E%3Crect x='106' y='4' width='12' height='6'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 120px 14px;
+  background-repeat: repeat-x;
+}
+
+/*
+ * Fond de page.
+ * Le semis est posé sur `body` en `background-attachment: fixed` : il ne
+ * défile pas avec le contenu, ce qui évite la répétition visible d'une
+ * tuile sur une page de plusieurs milliers de pixels, et ne coûte aucun
+ * élément supplémentaire dans le document.
+ *
+ * L'opacité est à 7 %. À 13 %, mesuré à l'écran, la tuile se lisait comme
+ * un papier peint : les losanges entraient en concurrence avec les cartes
+ * du catalogue au lieu de les porter. Un fond qu'on remarque a cessé d'être
+ * un fond.
+ */
+body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23101010' stroke-width='1.2' opacity='.07'%3E%3Cpath d='M12 10v6M9 13h6'/%3E%3Ccircle cx='52' cy='20' r='3.5'/%3E%3Cpath d='M28 46l5-5 5 5-5 5z'/%3E%3Cpath d='M58 56h8M62 52v8'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 72px 72px;
+  background-attachment: fixed;
+}
+
+/*
+ * Travelling lent sur la diapositive visible.
+ * Un fondu entre deux images fixes se lit comme un diaporama de conférence ;
+ * ce déplacement de 4 % donne au bloc l'air d'être vivant entre deux
+ * changements. L'échelle reste sous 1,06 : au-delà, le recadrage se voit.
+ */
+@keyframes diapo-travelling {
+  from {
+    transform: scale(1.005) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.06) translate3d(-1.4%, -1%, 0);
+  }
+}
+
+.diapo-active {
+  animation: diapo-travelling 9s var(--ease-out-soft) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diapo-active {
+    animation: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

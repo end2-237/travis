@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { WordRise } from "@/components/motion/split-words";
+import { BandeKente, Motif } from "@/components/site/motif";
 import { Photo } from "@/components/site/photo";
 import { IMG } from "@/lib/content";
 
@@ -20,6 +21,15 @@ export function CtaBanner() {
           sizes="100vw"
           className="grain min-h-[400px] rounded-stage md:min-h-[460px] lg:h-[510px]"
         >
+          {/* Trame adinkra claire sur le voile : le bandeau final était le
+              plus grand aplat sombre de la page. */}
+          <Motif
+            nom="adinkra-clair"
+            opacite={0.12}
+            fondu="radial"
+            className="z-[1]"
+          />
+
           <div className="absolute inset-0 z-10 flex flex-col justify-center p-7 md:p-12 lg:p-14">
             {/* Titre bas de page : la montée des mots suit le défilement,
                 sinon elle serait jouée bien avant qu'on y arrive. */}
@@ -48,11 +58,9 @@ export function CtaBanner() {
             <ArrowUpRight className="h-6 w-6" strokeWidth={2} />
           </Link>
 
-          <div className="absolute bottom-9 left-7 z-10 flex gap-1.5 md:bottom-12 md:left-12">
-            <span className="h-1.5 w-5 rounded-full bg-white" />
-            <span className="h-1.5 w-1.5 rounded-full bg-white/45" />
-            <span className="h-1.5 w-1.5 rounded-full bg-white/45" />
-          </div>
+          {/* Lisière tissée en bas de la scène, à la place des trois puces
+              décoratives qui ne pilotaient rien. */}
+          <BandeKente className="absolute inset-x-0 bottom-0 z-10" />
         </Photo>
       </Reveal>
     </section>

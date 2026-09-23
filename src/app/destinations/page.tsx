@@ -1,10 +1,10 @@
-import { NB_PROGRAMMES } from "@/data/stats";
+import { NB_DESTINATIONS, NB_PROGRAMMES } from "@/data/stats";
 import type { Metadata } from "next";
 import { CatalogBrowser } from "@/components/destination/catalog-browser";
 import { Footer } from "@/components/site/footer";
 import { PageHeader } from "@/components/site/page-header";
 import { Reveal } from "@/components/motion/reveal";
-import { CATALOG, COUNTRIES_IN_CATALOG } from "@/data/catalog";
+import { CATALOG } from "@/data/catalog";
 
 export const metadata: Metadata = {
   title: "Catalogue des bourses et universités",
@@ -28,7 +28,7 @@ export default function CatalogPage() {
           <p className="mt-3 max-w-[68ch] text-[13px] leading-[1.65] text-ink-muted">
             {fullyFunded} bourses intégrales et{" "}
             {CATALOG.length - fullyFunded} universités à frais réduits, réparties
-            sur {COUNTRIES_IN_CATALOG.length} destinations. Chaque fiche donne
+            sur {NB_DESTINATIONS} destinations. Chaque fiche donne
             la procédure exacte, le budget réel et le lien officiel.
           </p>
         </Reveal>

@@ -8,8 +8,9 @@ import { Grain } from "@/components/site/grain";
 import { Hero } from "@/components/site/hero";
 import { Manifesto } from "@/components/site/manifesto";
 import { Marquee } from "@/components/site/marquee";
+import { Motif } from "@/components/site/motif";
 import { ScrollProgress } from "@/components/site/scroll-progress";
-import { Testimonials } from "@/components/site/testimonials";
+import { Exemples } from "@/components/site/exemples";
 import { CATALOG } from "@/data/catalog";
 
 /**
@@ -33,9 +34,13 @@ export default function HomePage() {
           juste au-dessus défile ici sous forme de noms. */}
       <Grain
         soft
-        className="mesh mt-14 overflow-hidden md:mt-20"
+        className="mesh relative mt-14 overflow-hidden md:mt-20"
         as="section"
       >
+        {/* Le méandre ocre donne une trame au bandeau sombre, qui n'était
+            qu'un aplat d'encre traversé par du texte. */}
+        <Motif nom="dedale" opacite={0.1} fondu="bords" />
+
         <Marquee
           items={DESTINATIONS}
           className="relative z-10 py-4 text-[12.5px] font-medium text-white/80"
@@ -47,7 +52,7 @@ export default function HomePage() {
       <Deals />
       <Destinations />
       <About />
-      <Testimonials />
+      <Exemples />
       <CtaBanner />
       <Footer />
     </main>

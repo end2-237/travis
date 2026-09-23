@@ -1,5 +1,6 @@
 import { CountUp } from "@/components/motion/count-up";
 import { Reveal } from "@/components/motion/reveal";
+import { Motif } from "@/components/site/motif";
 import { ACHIEVEMENTS } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
@@ -9,7 +10,9 @@ import { cn } from "@/lib/utils";
  */
 export function Achievements() {
   return (
-    <section className="pt-14 md:pt-20">
+    <section className="relative pt-14 md:pt-20">
+      <Motif nom="adinkra" opacite={0.08} fondu="radial" className="-z-10" />
+
       <Reveal className="shell flex justify-center">
         <span className="eyebrow">Nos résultats</span>
       </Reveal>
@@ -26,11 +29,15 @@ export function Achievements() {
                   delay={index * 80}
                   className={cn(
                     "flex min-w-[190px] snap-start flex-col items-center justify-center rounded-card px-6 py-7 text-center transition-colors md:min-w-0",
+                    "relative overflow-hidden",
                     featured
                       ? "bg-white shadow-card"
                       : "bg-surface-sunk/60 text-ink-faint",
                   )}
                 >
+                  {featured ? (
+                    <Motif nom="kuba" opacite={0.09} fondu="bords" />
+                  ) : null}
                   <span
                     className={cn(
                       "text-[30px] font-semibold tracking-[-0.04em] md:text-[38px]",
